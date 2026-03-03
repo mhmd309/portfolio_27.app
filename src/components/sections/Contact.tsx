@@ -108,7 +108,7 @@ export default function Contact() {
                 } catch (err: unknown) {
                   setOk(false);
                   const msg = err instanceof Error ? err.message : "Network error";
-                  setError(msg === "The user aborted a request." ? "انتهت مهلة الاتصال بالخادم" : "Network error");
+                  setError(msg === "The user aborted a request." ? "Server connection timed out" : "Network error");
                 } finally {
                   setLoading(false);
                 }
@@ -141,8 +141,8 @@ export default function Contact() {
               {dirty.name && !nameValid && !ok ? (
                 <p className="text-sm text-red-600" aria-live="polite">
                   {nameTooShort
-                    ? `ناقص ${nameMin - nameVal.length} حرف`
-                    : `تجاوزت الحد الأقصى ${nameMax} حرفًا`}
+                    ? `Need ${nameMin - nameVal.length} more characters`
+                    : `Exceeded the maximum of ${nameMax} characters`}
                 </p>
               ) : null}
               <label htmlFor="contact-email" className="block text-sm font-medium mb-0">
@@ -169,7 +169,7 @@ export default function Contact() {
               />
               {dirty.email && !emailValid && !ok ? (
                 <p className="text-sm text-red-600" aria-live="polite">
-                  صيغة البريد الإلكتروني غير صحيحة
+                  Invalid email address
                 </p>
               ) : null}
               <label htmlFor="contact-message" className="block text-sm font-medium mb-0">
@@ -198,8 +198,8 @@ export default function Contact() {
                 {dirty.message && !msgValid && !ok ? (
                   <p className="mt-0 text-sm text-red-600" aria-live="polite">
                     {msgTooShort
-                      ? `ناقص ${msgMin - msgVal.length} حرف`
-                      : `تجاوزت الحد الأقصى ${msgMax} حرفًا`}
+                      ? `Need ${msgMin - msgVal.length} more characters`
+                      : `Exceeded the maximum of ${msgMax} characters`}
                   </p>
                 ) : <span />}
                 <span className="text-xs text-zinc-500">

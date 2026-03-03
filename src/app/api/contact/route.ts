@@ -104,13 +104,13 @@ export async function POST(req: Request) {
         name?: string;
       };
       const reason = e.message ?? "Unknown error";
-      let friendly = "حدث خطأ غير متوقع أثناء إرسال البريد";
+      let friendly = "An unexpected error occurred while sending email";
       if (/RESEND_TIMEOUT/i.test(reason)) {
-        friendly = "انتهت مهلة الاتصال بخدمة البريد.";
+        friendly = "Email service connection timed out.";
       } else if (/api key/i.test(reason) || /unauthorized/i.test(reason)) {
-        friendly = "مفتاح Resend غير صحيح أو مفقود.";
+        friendly = "Resend API key is invalid or missing.";
       } else if (/domain/i.test(reason) || /from address/i.test(reason)) {
-        friendly = "بريد الإرسال غير مفعل على Resend (تحقق من domain).";
+        friendly = "Sender email is not verified on Resend (check domain).";
       } 
       return NextResponse.json(
         { ok: false, error: friendly },
