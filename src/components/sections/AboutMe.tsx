@@ -1,6 +1,6 @@
 "use client";
 
-import { FiUser, FiChevronRight, FiSmile, FiFileText, FiClock, FiCpu, FiDownload } from "react-icons/fi";
+import { FiUser, FiChevronRight, FiSmile, FiFileText, FiClock, FiCpu, FiEye } from "react-icons/fi";
 import { useEffect, useState, type ComponentType } from "react";
 import { animate, useMotionValue } from "framer-motion";
 
@@ -128,15 +128,16 @@ export default function AboutMe() {
             I focus on TypeScript‑first development, React/Next.js on the client, and Node.js, Laravel or Django
             on the server. My approach emphasizes clean code, accessibility, performance and solid engineering practices.
           </p>
-          <a
-            href="/cv/mohamedCv.pdf"
-            download
-            className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-zinc-900 px-4 py-2 text-white transition hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
-            aria-label="تحميل السيرة الذاتية"
-          >
-            <FiDownload className="h-5 w-5" />
-            <span>تحميل السيرة الذاتية</span>
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="/resume"
+              className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-zinc-900 px-4 py-2 text-white transition hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+              aria-label="View resume"
+            >
+              <FiEye className="h-5 w-5" />
+              <span>View Resume</span>
+            </a>
+          </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
           <Stat to={40} label="Happy Clients" Icon={FiSmile} up={2} down={1.4} />
