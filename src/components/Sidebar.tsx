@@ -89,7 +89,7 @@ export default function Sidebar({ open, onClose }: Props) {
         aria-hidden={!open}
       >
         <div className="flex items-center justify-between h-16 px-4 border-b border-zinc-200/60 font-semibold">
-          Mohamed Emara
+          Menu
           <div className="flex items-center">
             <button
               onClick={onClose}

@@ -1,6 +1,6 @@
- "use client";
+"use client";
 
-import { FiUser, FiChevronRight, FiSmile, FiFileText, FiClock, FiCpu } from "react-icons/fi";
+import { FiUser, FiChevronRight, FiSmile, FiFileText, FiClock, FiCpu, FiDownload } from "react-icons/fi";
 import { useEffect, useState, type ComponentType } from "react";
 import { animate, useMotionValue } from "framer-motion";
 
@@ -46,8 +46,8 @@ function Stat({
     </div>
   );
 }
- 
- export default function AboutMe() {
+
+export default function AboutMe() {
   return (
     <section id="about" className="py-16 scroll-mt-24 lg:scroll-mt-28">
       <div className="mx-auto max-w-4xl space-y-8">
@@ -62,8 +62,8 @@ function Stat({
           and deliver polished UX with Tailwind CSS — data powered by MySQL and modern workflows on GitHub.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <div>
+        <div className="grid md:grid-cols-2 gap-8 md:justify-items-center">
+          <div className="md:w-fit md:mx-auto">
             <ul className="space-y-2">
               <li className="flex items-center gap-2">
                 <FiChevronRight className="h-4 w-4" />
@@ -90,11 +90,12 @@ function Stat({
               <li className="flex items-center gap-2">
                 <FiChevronRight className="h-4 w-4" />
                 <span className="font-bold underline">City:</span>
-                <span className="text-zinc-700">Mansoura, Egypt</span>
+                <span className="text-zinc-700">El-Mansoura, Egypt</span>
               </li>
             </ul>
+
           </div>
-          <div>
+          <div className="md:w-fit md:mx-auto">
             <ul className="space-y-2">
               <li className="flex items-center gap-2">
                 <FiChevronRight className="h-4 w-4" />
@@ -119,11 +120,23 @@ function Stat({
                 <span className="text-zinc-700">Available</span>
               </li>
             </ul>
-            <p className="mt-6 text-zinc-700">
-              I focus on TypeScript‑first development, React/Next.js on the client, and Node.js, Laravel or Django
-              on the server. My approach emphasizes clean code, accessibility, performance and solid engineering practices.
-            </p>
+
           </div>
+        </div>
+        <div className="mt-6 mb-3 flex flex-col items-center justify-center gap-5">
+          <p className="text-zinc-700 text-center">
+            I focus on TypeScript‑first development, React/Next.js on the client, and Node.js, Laravel or Django
+            on the server. My approach emphasizes clean code, accessibility, performance and solid engineering practices.
+          </p>
+          <a
+            href="/cv/mohamedCv.pdf"
+            download
+            className="flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-zinc-900 px-4 py-2 text-white transition hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+            aria-label="تحميل السيرة الذاتية"
+          >
+            <FiDownload className="h-5 w-5" />
+            <span>تحميل السيرة الذاتية</span>
+          </a>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
           <Stat to={40} label="Happy Clients" Icon={FiSmile} up={2} down={1.4} />
@@ -134,4 +147,4 @@ function Stat({
       </div>
     </section>
   );
- }
+}

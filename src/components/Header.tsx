@@ -11,8 +11,8 @@ export default function Header({ onToggleSidebar }: Props) {
   return (
     <header className="sticky top-0 z-40 border-b border-zinc-200/60 dark:border-zinc-800/60 bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className="font-semibold text-lg tracking-tight">
-          Portfolio
+        <Link href="/" className="font-bold text-lg tracking-tight">
+          Mohamed Emara
         </Link>
         <button
           aria-label="Toggle sidebar"

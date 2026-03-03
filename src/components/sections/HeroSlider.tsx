@@ -147,6 +147,16 @@ export default function HeroSlider() {
             href="#about"
             aria-label="Scroll to About"
             className="inline-flex items-center justify-center h-12 w-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              const el = document.getElementById("about");
+              if (el) {
+                const y = el.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo({ top: y, behavior: "smooth" });
+              } else {
+                window.location.hash = "about";
+              }
+            }}
           >
             <FiChevronDown className="h-6 w-6" />
           </a>
