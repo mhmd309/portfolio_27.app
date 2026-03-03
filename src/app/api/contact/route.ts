@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       );
     }
     const resend = new Resend(RESEND_API_KEY);
-    const rawFrom = RESEND_FROM_EMAIL || (process.env.NODE_ENV !== "production" ? "onboarding@resend.dev" : "");
+    const rawFrom = RESEND_FROM_EMAIL || "";
     if (!rawFrom) {
       return NextResponse.json(
         { ok: false, error: "Server email is not configured" },
@@ -97,26 +97,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (err: unknown) {
-    const isDev = process.env.NODE_ENV !== "production";
-    if (isDev) {
-      const e = err as {
-        message?: string;
-        name?: string;
-      };
-      const reason = e.message ?? "Unknown error";
-      let friendly = "An unexpected error occurred while sending email";
-      if (/RESEND_TIMEOUT/i.test(reason)) {
-        friendly = "Email service connection timed out.";
-      } else if (/api key/i.test(reason) || /unauthorized/i.test(reason)) {
-        friendly = "Resend API key is invalid or missing.";
-      } else if (/domain/i.test(reason) || /from address/i.test(reason)) {
-        friendly = "Sender email is not verified on Resend (check domain).";
-      } 
-      return NextResponse.json(
-        { ok: false, error: friendly },
-        { status: 500 }
-      );
-    }
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
 }
