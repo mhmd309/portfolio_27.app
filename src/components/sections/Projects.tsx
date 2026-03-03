@@ -155,9 +155,9 @@ export default function Projects() {
             {current.map((p: Project) => (
               <div
                 key={`${p.title}-${p.date}`}
-                className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-black/30 overflow-hidden"
+                className="group rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-black/30 overflow-hidden hover:cursor-pointer"
               >
-                <div className="relative h-44 bg-zinc-50 dark:bg-zinc-900">
+                <div className="relative h-44 bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
                   {p.brand ? (
                     <span
                       className={
@@ -177,10 +177,10 @@ export default function Projects() {
                     alt={p.title}
                     fill
                     sizes="(max-width: 640px) 100vw, 33vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
                     priority={false}
                   />
-                  <div className="absolute inset-x-0 bottom-[-15] flex justify-center">
+                  <div className="absolute inset-x-0 bottom-[4] flex justify-center z-50">
                     <Link
                       href={p.link || "#"}
                       target={p.link ? "_blank" : "_self"}
