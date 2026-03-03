@@ -193,11 +193,11 @@ export default function Projects() {
                 </div>
                 <div className="pt-6 p-2">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-semibold">
+                    <div className="flex items-center gap-1 font-semibold">
                       <FiFolder className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
                       <span>{p.title}</span>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-zinc-600 dark:text-zinc-400">
+                    <div className="flex items-center text-xs text-zinc-600 dark:text-zinc-400">
                       <FiCalendar className="h-4 w-4" />
                       <span>{formatDate(p.date)}</span>
                     </div>
