@@ -21,3 +21,34 @@ body {
   color: var(--foreground);
   font-family: var(--font-arabic), var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Custom Scrollbar - Scrollbar Laziz */
+::-webkit-scrollbar {
+  width: 20px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #25343F;
+  border-radius: 9999px;
+  border: 2px solid transparent; /* Creates padding around thumb */
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #374b5a;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Firefox Support */
+@supports (scrollbar-color: auto) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #25343F transparent;
+  }
+}
