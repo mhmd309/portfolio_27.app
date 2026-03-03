@@ -36,7 +36,7 @@ export default function Contact() {
     setDirty({ name: false, email: false, message: false });
   };
   return (
-    <section id="contact" className="py-16 scroll-mt-24 lg:scroll-mt-28">
+    <section id="contact" className="py-16 pb-0 scroll-mt-24 lg:scroll-mt-28">
       <div className="mx-auto max-w-4xl">
         <div className="flex items-center gap-3 mb-6">
           <FiMail className="h-6 w-6" />
