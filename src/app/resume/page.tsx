@@ -143,13 +143,22 @@ export default function ResumePage() {
                 </span>
               </div>
               <div className="p-5 pt-3">
-                <ul className="grid grid-cols-1 gap-2 text-sm">
-                  {strengths.map((s) => (
-                    <li key={s} className="text-zinc-700 dark:text-zinc-300">
-                      <span className="text-rose-500">#</span> {s}
-                    </li>
-                  ))}
-                </ul>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10">
+                  <ul className="space-y-2 text-sm">
+                    {strengths.slice(0, 5).map((s) => (
+                      <li key={s} className="text-zinc-700 dark:text-zinc-300">
+                        <span className="text-rose-500">#</span> {s}
+                      </li>
+                    ))}
+                  </ul>
+                  <ul className="space-y-2 text-sm">
+                    {strengths.slice(5).map((s) => (
+                      <li key={s} className="text-zinc-700 dark:text-zinc-300">
+                        <span className="text-rose-500">#</span> {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
 
