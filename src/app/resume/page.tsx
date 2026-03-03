@@ -101,7 +101,7 @@ export default function ResumePage() {
                   <li className="flex gap-2"><span className="mt-1 h-[6px] w-[6px] rounded-full bg-zinc-500" /><span>Led the redesign of a key product feature, resulting in a 30% increase in user engagement, which directly contributed to a 15% boost in subscription renewals over six months.</span></li>
                   <li className="flex gap-2"><span className="mt-1 h-[6px] w-[6px] rounded-full bg-zinc-500" /><span>Implemented automated testing processes that reduced bugs in production by 25%, helping the team deliver high-quality releases on schedule.</span></li>
                   <li className="flex gap-2"><span className="mt-1 h-[6px] w-[6px] rounded-full bg-zinc-500" /><span>Collaborated with cross-functional teams, including designers and product managers, to align project goals and streamline development workflows, which improved overall project efficiency by 20%.</span></li>
-                  <li className="flex gap-2"><span className="mt-1 h-[6px] w-[6px] rounded-full bg-zinc-500" /><span>Provided mentorship and guidance to junior developers, fostering a culture of continuous learning and helping to elevate the team's technical skills.</span></li>
+                  <li className="flex gap-2"><span className="mt-1 h-[6px] w-[6px] rounded-full bg-zinc-500" /><span>Provided mentorship and guidance to junior developers, fostering a culture of continuous learning and helping to elevate the team&apos;s technical skills.</span></li>
                 </ul>
               </div>
             </div>

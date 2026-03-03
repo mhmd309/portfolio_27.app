@@ -96,7 +96,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (err: unknown) {
+  } catch (_err: unknown) {
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
 }
