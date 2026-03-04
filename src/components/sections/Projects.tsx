@@ -186,8 +186,8 @@ export default function Projects() {
                       target={p.link ? "_blank" : "_self"}
                       className="group inline-flex items-center gap-2 rounded-md px-4 py-2 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/60 hover:border-zinc-800/60 hover:bg-black/100 hover:text-white cursor-pointer transition-colors duration-600"
                     >
-                      <span>View Now</span>
                       <FiEye className="h-4 w-4" />
+                      <span>View Now</span>
                     </Link>
                   </div>
                 </div>
@@ -231,6 +231,7 @@ export default function Projects() {
               onClick={() => setVisible(6)}
               className="inline-flex items-center justify-center rounded-md px-4 py-2 border border-zinc-200/60 dark:border-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200 cursor-pointer"
             >
+              <FiEyeOff className="mr-2 h-4 w-4" />
               View less
             </button>
           </div>
