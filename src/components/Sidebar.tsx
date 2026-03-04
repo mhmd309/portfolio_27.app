@@ -5,6 +5,8 @@ import { TbSlideshow } from "react-icons/tb";
 import clsx from "clsx";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 const items = [
   { href: "#hero", label: "HOME", Icon: TbSlideshow },
   { href: "#about", label: "ABOUT ME", Icon: FiUser },
@@ -20,6 +22,8 @@ type Props = {
 
 export default function Sidebar({ open, onClose }: Props) {
   const [active, setActive] = useState<string>("#hero");
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   useEffect(() => {
     const elems = items
       .map(({ href }) => document.querySelector(href) as HTMLElement | null)
@@ -113,20 +117,26 @@ export default function Sidebar({ open, onClose }: Props) {
           <ul className="space-y-1">
             {items.map(({ href, label, Icon }) => (
               <li key={href}>
-                <a
-                  href={href}
+                <Link
+                  href={isHome ? href : `/${href}`}
                   aria-current={active === href ? "page" : undefined}
-                  onClick={() => setActive(href)}
+                  onClick={() => {
+                    setActive(href);
+                    if (window.innerWidth < 1024) onClose();
+                  }}
                   className={clsx(
                     "group relative overflow-hidden flex items-center gap-3 rounded-md px-3 py-2 text-zinc-700 cursor-pointer transition-colors duration-200 ease-out",
                     active === href &&
                       "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 ring-1 ring-zinc-300/60 dark:ring-zinc-700/60"
                   )}
                 >
-                  <span aria-hidden className={clsx(
-                    "absolute inset-y-0 left-0 bg-zinc-100 dark:bg-zinc-900 transition-[width] duration-300 ease-out",
-                    "w-0 group-hover:w-full"
-                  )} />
+                  <span
+                    aria-hidden
+                    className={clsx(
+                      "absolute inset-y-0 left-0 bg-zinc-100 dark:bg-zinc-900 transition-[width] duration-300 ease-out",
+                      "w-0 group-hover:w-full"
+                    )}
+                  />
                   {active === href ? (
                     <span
                       aria-hidden
@@ -135,7 +145,7 @@ export default function Sidebar({ open, onClose }: Props) {
                   ) : null}
                   <Icon className={clsx("relative z-10 h-5 w-5", active === href && "text-zinc-900 dark:text-zinc-100")} />
                   <span className={clsx("relative z-10", active === href && "font-semibold")}>{label}</span>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
