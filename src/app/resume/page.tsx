@@ -39,7 +39,7 @@ export default function ResumePage() {
         <div className="absolute right-16 top-20 h-24 w-24 rounded-full bg-[#c6dae2]/80" />
         <div className="absolute right-12 top-10 h-36 w-36 rounded-full bg-[#f2c8d0]/70" />
         <div className="absolute right-14 top-18 h-24 w-24 overflow-hidden rounded-full ring-2 ring-white/70">
-          <Image src="/icon.jpg" alt="Profile" width={160} height={160} />
+          <Image src="/cv.jpg" alt="Profile" width={160} height={160} />
         </div>
       </div>
       <div className="pointer-events-none absolute -bottom-10 right-6 h-40 w-40">

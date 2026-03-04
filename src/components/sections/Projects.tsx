@@ -1,6 +1,6 @@
 "use client";
 
-import { FiFolder, FiCalendar, FiEye, FiLoader, FiEyeOff } from "react-icons/fi";
+import { FiFolder, FiCalendar, FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useMemo } from "react";
@@ -218,9 +218,10 @@ export default function Projects() {
           <div className="mt-8 flex justify-center">
             <button
               onClick={handleLoadMore}
+              disabled={loadingMore}
               className="inline-flex items-center justify-center rounded-md px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-black dark:hover:bg-white transition-colors duration-200 cursor-pointer"
             >
-              <FiLoader className={"mr-2 h-4 w-4 " + (loadingMore ? "animate-spin" : "")} />
+              <FiEye className="mr-2 h-4 w-4" />
               View more
             </button>
           </div>
