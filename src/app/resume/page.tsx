@@ -31,21 +31,47 @@ const strengths = [
 
 export default function ResumePage() {
   return (
-    <section className="relative py-10 sm:py-14">
-      <div className="pointer-events-none absolute right-0 top-0 h-72 w-72 sm:h-96 sm:w-96">
-        <div className="absolute right-4 top-6 h-28 w-28 rounded-full bg-[#e8a7b3]/70 blur-0" />
-        <div className="absolute right-24 top-0 h-16 w-16 rounded-full bg-[#b9d2dc]/80" />
-        <div className="absolute right-6 top-36 h-16 w-16 rounded-full bg-[#e6d2b8]/80" />
-        <div className="absolute right-16 top-20 h-24 w-24 rounded-full bg-[#c6dae2]/80" />
-        <div className="absolute right-12 top-10 h-36 w-36 rounded-full bg-[#f2c8d0]/70" />
+    <section className="relative z-0 py-10 sm:py-14">
+      <div className="pointer-events-none absolute right-0 top-0 h-72 w-72 sm:h-96 sm:w-96 -z-10">
+        <div className="absolute right-4 top-6 h-28 w-28 rounded-full bg-[#e8a7b3]/70 blur-0 will-change-transform animate-[floatA_12s_ease-in-out_infinite]" />
+        <div className="absolute right-24 top-0 h-16 w-16 rounded-full bg-[#b9d2dc]/80 will-change-transform animate-[floatB_14s_ease-in-out_infinite] delay-[200ms]" />
+        <div className="absolute right-6 top-36 h-16 w-16 rounded-full bg-[#e6d2b8]/80 will-change-transform animate-[floatC_16s_ease-in-out_infinite] delay-[400ms]" />
+        <div className="absolute right-16 top-20 h-24 w-24 rounded-full bg-[#c6dae2]/80 will-change-transform animate-[floatD_18s_ease-in-out_infinite] delay-[600ms]" />
+        <div className="absolute right-12 top-10 h-36 w-36 rounded-full bg-[#f2c8d0]/70 will-change-transform animate-[floatA_20s_ease-in-out_infinite] delay-[800ms]" />
         <div className="absolute right-14 top-18 h-24 w-24 overflow-hidden rounded-full ring-2 ring-white/70">
-          <Image src="/cv.jpg" alt="Profile" width={160} height={160} />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#f2c8d0]/60 via-[#f2c8d0]/30 to-transparent blur-[1px] will-change-transform animate-[pulseGlow_6s_ease-in-out_infinite]" />
+          <Image src="/cv.jpg" alt="Profile" width={160} height={160} className="relative z-10" />
         </div>
       </div>
-      <div className="pointer-events-none absolute -bottom-10 right-6 h-40 w-40">
-        <div className="absolute bottom-0 right-0 h-12 w-12 rounded-full bg-[#b9d2dc]/80" />
-        <div className="absolute -bottom-6 -right-6 h-16 w-16 rounded-full bg-[#f2c8d0]/70" />
-        <div className="absolute -bottom-2 right-10 h-6 w-6 rounded-full bg-[#e6d2b8]/80" />
+      <div className="pointer-events-none absolute left-0 top-8 h-64 w-64 sm:h-80 sm:w-80 -z-10">
+        <div className="absolute left-4 top-6 h-24 w-24 rounded-full bg-[#e8a7b3]/60 will-change-transform animate-[floatA_12s_ease-in-out_infinite]" />
+        <div className="absolute left-20 top-0 h-14 w-14 rounded-full bg-[#b9d2dc]/80 will-change-transform animate-[floatB_14s_ease-in-out_infinite] delay-[200ms]" />
+        <div className="absolute left-6 top-32 h-14 w-14 rounded-full bg-[#e6d2b8]/80 will-change-transform animate-[floatC_16s_ease-in-out_infinite] delay-[400ms]" />
+        <div className="absolute left-16 top-20 h-20 w-20 rounded-full bg-[#c6dae2]/80 will-change-transform animate-[floatD_18s_ease-in-out_infinite] delay-[600ms]" />
+        <div className="absolute left-10 top-10 h-32 w-32 rounded-full bg-[#f2c8d0]/70 will-change-transform animate-[floatA_20s_ease-in-out_infinite] delay-[800ms]" />
+      </div>
+      <div className="pointer-events-none absolute left-2 top-1/3 h-64 w-64 sm:h-72 sm:w-72 -z-10">
+        <div className="absolute left-2 top-3 h-20 w-20 rounded-full bg-[#c6dae2]/80 will-change-transform animate-[floatB_13s_ease-in-out_infinite]" />
+        <div className="absolute left-16 top-10 h-24 w-24 rounded-full bg-[#f2c8d0]/70 will-change-transform animate-[floatC_17s_ease-in-out_infinite] delay-[250ms]" />
+        <div className="absolute left-10 top-28 h-16 w-16 rounded-full bg-[#e6d2b8]/80 will-change-transform animate-[floatD_15s_ease-in-out_infinite] delay-[500ms]" />
+        <div className="absolute left-24 top-20 h-14 w-14 rounded-full bg-[#b9d2dc]/80 will-change-transform animate-[floatA_19s_ease-in-out_infinite] delay-[750ms]" />
+      </div>
+      <div className="pointer-events-none absolute right-8 top-1/2 h-60 w-60 sm:h-72 sm:w-72 -z-10">
+        <div className="absolute right-3 top-4 h-16 w-16 rounded-full bg-[#b9d2dc]/80 will-change-transform animate-[floatA_13s_ease-in-out_infinite]" />
+        <div className="absolute right-20 top-0 h-24 w-24 rounded-full bg-[#e8a7b3]/60 will-change-transform animate-[floatB_18s_ease-in-out_infinite] delay-[200ms]" />
+        <div className="absolute right-10 top-24 h-20 w-20 rounded-full bg-[#c6dae2]/80 will-change-transform animate-[floatC_16s_ease-in-out_infinite] delay-[400ms]" />
+        <div className="absolute right-16 top-14 h-14 w-14 rounded-full bg-[#e6d2b8]/80 will-change-transform animate-[floatD_20s_ease-in-out_infinite] delay-[600ms]" />
+      </div>
+      <div className="pointer-events-none absolute left-6 bottom-6 h-56 w-56 sm:h-64 sm:w-64 -z-10">
+        <div className="absolute left-0 bottom-4 h-14 w-14 rounded-full bg-[#e6d2b8]/80 will-change-transform animate-[floatB_16s_ease-in-out_infinite]" />
+        <div className="absolute left-14 bottom-8 h-20 w-20 rounded-full bg-[#f2c8d0]/70 will-change-transform animate-[floatC_20s_ease-in-out_infinite] delay-[300ms]" />
+        <div className="absolute left-8 bottom-20 h-16 w-16 rounded-full bg-[#b9d2dc]/80 will-change-transform animate-[floatD_14s_ease-in-out_infinite] delay-[600ms]" />
+        <div className="absolute left-20 bottom-14 h-12 w-12 rounded-full bg-[#c6dae2]/80 will-change-transform animate-[floatA_18s_ease-in-out_infinite] delay-[900ms]" />
+      </div>
+      <div className="pointer-events-none absolute -bottom-10 right-6 h-40 w-40 -z-10">
+        <div className="absolute bottom-0 right-0 h-12 w-12 rounded-full bg-[#b9d2dc]/80 will-change-transform animate-[floatA_13s_ease-in-out_infinite]" />
+        <div className="absolute -bottom-6 -right-6 h-16 w-16 rounded-full bg-[#f2c8d0]/70 will-change-transform animate-[floatB_17s_ease-in-out_infinite] delay-[200ms]" />
+        <div className="absolute -bottom-2 right-10 h-6 w-6 rounded-full bg-[#e6d2b8]/80 will-change-transform animate-[floatC_15s_ease-in-out_infinite] delay-[400ms]" />
       </div>
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
