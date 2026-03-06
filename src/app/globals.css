@@ -22,6 +22,26 @@ body {
   font-family: var(--font-arabic), var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+.custom-cursor,
+.custom-cursor * {
+  cursor: none;
+}
+
+.custom-cursor input,
+.custom-cursor textarea {
+  cursor: text;
+}
+
+::selection {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+::-moz-selection {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
 /* Custom Scrollbar - Scrollbar Laziz */
 ::-webkit-scrollbar {
   width: 20px;

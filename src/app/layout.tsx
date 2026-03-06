@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cairo } from "next/font/google";
 import "./globals.css";
 import SiteShell from "../components/SiteShell";
+import Cursor from "../components/Cursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,7 +42,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} antialiased custom-cursor`}>
+        <Cursor />
         <SiteShell>{children}</SiteShell>
       </body>
     </html>
