@@ -115,29 +115,37 @@ export default function Contact() {
               }}
               className="space-y-3"
             >
-              <label htmlFor="contact-name" className="block text-sm font-medium mb-0">
-              Name:
-              </label>
-              <input
-                id="contact-name"
-                type="text"
-                placeholder="Name"
-                autoComplete="off"
-                value={form.name}
-                onChange={(e) => {
-                  setDirty((d) => ({ ...d, name: true }));
-                  setForm((f) => ({ ...f, name: e.target.value }));
-                }}
-                maxLength={nameMax + 10}
-                aria-invalid={dirty.name && !nameValid && !ok}
+              <div
                 className={clsx(
-                  "mt-0 w-full rounded-md bg-transparent px-3 py-2 focus:outline-none",
+                  "relative mt-0 w-full rounded-md transition-colors",
                   dirty.name && !nameValid && !ok
                     ? "border border-red-600 dark:border-red-500"
-                    : "border border-zinc-300 dark:border-zinc-700"
+                    : "border border-zinc-300 dark:border-zinc-700 focus-within:border-zinc-900 dark:focus-within:border-zinc-200"
                 )}
-                required
-              />
+              >
+                <input
+                  id="contact-name"
+                  type="text"
+                  placeholder=" "
+                  aria-label="Name"
+                  autoComplete="off"
+                  value={form.name}
+                  onChange={(e) => {
+                    setDirty((d) => ({ ...d, name: true }));
+                    setForm((f) => ({ ...f, name: e.target.value }));
+                  }}
+                  maxLength={nameMax + 10}
+                  aria-invalid={dirty.name && !nameValid && !ok}
+                  className="peer w-full bg-transparent px-3 py-3 rounded-md outline-none"
+                  required
+                />
+                <label
+                  htmlFor="contact-name"
+                  className="pointer-events-none absolute left-3 top-[50%] -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:-top-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:text-xs"
+                >
+                  Name
+                </label>
+              </div>
               {dirty.name && !nameValid && !ok ? (
                 <p className="text-sm text-red-600" aria-live="polite">
                   {nameTooShort
@@ -145,55 +153,71 @@ export default function Contact() {
                     : `Exceeded the maximum of ${nameMax} characters`}
                 </p>
               ) : null}
-              <label htmlFor="contact-email" className="block text-sm font-medium mb-0">
-               Email:
-              </label>
-              <input
-                id="contact-email"
-                type="email"
-                placeholder="Email"
-                autoComplete="off"
-                value={form.email}
-                onChange={(e) => {
-                  setDirty((d) => ({ ...d, email: true }));
-                  setForm((f) => ({ ...f, email: e.target.value }));
-                }}
-                aria-invalid={dirty.email && !emailValid && !ok}
+              <div
                 className={clsx(
-                  "mt-0 w-full rounded-md bg-transparent px-3 py-2 focus:outline-none",
+                  "relative mt-0 w-full rounded-md transition-colors",
                   dirty.email && !emailValid && !ok
                     ? "border border-red-600 dark:border-red-500"
-                    : "border border-zinc-300 dark:border-zinc-700"
+                    : "border border-zinc-300 dark:border-zinc-700 focus-within:border-zinc-900 dark:focus-within:border-zinc-200"
                 )}
-                required
-              />
+              >
+                <input
+                  id="contact-email"
+                  type="email"
+                  placeholder=" "
+                  aria-label="Email"
+                  autoComplete="off"
+                  value={form.email}
+                  onChange={(e) => {
+                    setDirty((d) => ({ ...d, email: true }));
+                    setForm((f) => ({ ...f, email: e.target.value }));
+                  }}
+                  aria-invalid={dirty.email && !emailValid && !ok}
+                  className="peer w-full bg-transparent px-3 py-3 rounded-md outline-none"
+                  required
+                />
+                <label
+                  htmlFor="contact-email"
+                  className="pointer-events-none absolute left-3 top-[50%] -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:-top-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:text-xs"
+                >
+                  Email
+                </label>
+              </div>
               {dirty.email && !emailValid && !ok ? (
                 <p className="text-sm text-red-600" aria-live="polite">
                   Invalid email address
                 </p>
               ) : null}
-              <label htmlFor="contact-message" className="block text-sm font-medium mb-0">
-                Message:
-              </label>
-              <textarea
-                id="contact-message"
-                placeholder="Message"
-                autoComplete="off"
-                value={form.message}
-                onChange={(e) => {
-                  setDirty((d) => ({ ...d, message: true }));
-                  setForm((f) => ({ ...f, message: e.target.value }));
-                }}
-                maxLength={msgMax + 50}
-                aria-invalid={dirty.message && !msgValid && !ok}
+              <div
                 className={clsx(
-                  "m-0 w-full rounded-md bg-transparent px-3 py-2 h-28 focus:outline-none resize-none",
+                  "relative mt-0 w-full rounded-md transition-colors",
                   dirty.message && !msgValid && !ok
                     ? "border border-red-600 dark:border-red-500"
-                    : "border border-zinc-300 dark:border-zinc-700"
+                    : "border border-zinc-300 dark:border-zinc-700 focus-within:border-zinc-900 dark:focus-within:border-zinc-200"
                 )}
-                required
-              />
+              >
+                <textarea
+                  id="contact-message"
+                  placeholder=" "
+                  aria-label="Message"
+                  autoComplete="off"
+                  value={form.message}
+                  onChange={(e) => {
+                    setDirty((d) => ({ ...d, message: true }));
+                    setForm((f) => ({ ...f, message: e.target.value }));
+                  }}
+                  maxLength={msgMax + 50}
+                  aria-invalid={dirty.message && !msgValid && !ok}
+                  className="peer m-0 w-full rounded-md bg-transparent px-3 py-3 h-28 outline-none resize-none"
+                  required
+                />
+                <label
+                  htmlFor="contact-message"
+                  className="pointer-events-none absolute left-3 top-6 -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:-top-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:text-xs"
+                >
+                  Message
+                </label>
+              </div>
               <div className="text-end mt-0 mb-0">
                 {dirty.message && !msgValid && !ok ? (
                   <p className="mt-0 text-sm text-red-600" aria-live="polite">
