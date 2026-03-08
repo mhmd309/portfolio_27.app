@@ -100,7 +100,10 @@ export default function ResumePage() {
             <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/60 dark:bg-black/30">
               <div className="flex items-center gap-2 px-5 pt-5">
                 <span className="inline-flex items-center gap-2 rounded-2xl bg-[#bcd0d9] px-4 py-2 text-sm font-semibold">
-                  <FiUser className="h-4 w-4" /> Profile
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#9fb6c2]">
+                    <FiUser className="h-3.5 w-3.5" />
+                  </span>
+                  Profile
                 </span>
               </div>
               <div className="p-5 pt-3 text-zinc-700 dark:text-zinc-300">
@@ -115,7 +118,10 @@ export default function ResumePage() {
             <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/60 dark:bg-black/30">
               <div className="flex items-center gap-2 px-5 pt-5">
                 <span className="inline-flex items-center gap-2 rounded-2xl bg-[#bcd0d9] px-4 py-2 text-sm font-semibold">
-                  <FiBriefcase className="h-4 w-4" /> Work Experience
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#9fb6c2]">
+                    <FiBriefcase className="h-3.5 w-3.5" />
+                  </span>
+                  Work Experience
                 </span>
               </div>
               <div className="p-5 pt-3">
@@ -132,40 +138,17 @@ export default function ResumePage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/60 dark:bg-black/30">
-              <div className="flex items-center gap-2 px-5 pt-5">
-                <span className="inline-flex items-center gap-2 rounded-2xl bg-[#bcd0d9] px-4 py-2 text-sm font-semibold">
-                  <TbFlask className="h-4 w-4" /> Skills
-                </span>
-              </div>
-              <div className="p-5 pt-3">
-                <ul className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
-                  <li className="flex items-center justify-between py-1.5">
-                    <span>React/Next/Node</span>
-                    <span className="font-semibold">Professional</span>
-                  </li>
-                  <li className="flex items-center justify-between py-1.5">
-                    <span>HTML/CSS</span>
-                    <span className="font-semibold">Professional</span>
-                  </li>
-                  <li className="flex items-center justify-between py-1.5">
-                    <span>Back-end Developer</span>
-                    <span className="font-semibold">Professional</span>
-                  </li>
-                  <li className="flex items-center justify-between py-1.5">
-                    <span>Web Application</span>
-                    <span className="font-semibold">Professional</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            
           </div>
 
           <div className="space-y-6">
             <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/60 dark:bg-black/30">
               <div className="flex items-center gap-2 px-5 pt-5">
                 <span className="inline-flex items-center gap-2 rounded-2xl bg-[#f2c8d0] px-4 py-2 text-sm font-semibold">
-                  <FiStar className="h-4 w-4" /> Strengths
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#d98796]">
+                    <FiStar className="h-3.5 w-3.5" />
+                  </span>
+                  Strengths
                 </span>
               </div>
               <div className="p-5 pt-3">
@@ -200,19 +183,19 @@ export default function ResumePage() {
               <div className="p-5 pt-4">
                 <ul className="grid grid-cols-3 justify-items-center gap-2 text-center">
                   <li className="flex flex-col items-center gap-2 py-3 px-4 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f2c8d0]/50 text-zinc-700 dark:text-zinc-300">
                       <TbPlane className="h-6 w-6" />
                     </span>
                     <span className="text-sm text-zinc-700 dark:text-zinc-300">Exploring distant lands</span>
                   </li>
                   <li className="flex flex-col items-center gap-2 py-3 px-4 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f2c8d0]/50 text-zinc-700 dark:text-zinc-300">
                       <TbBookmark className="h-6 w-6" />
                     </span>
                     <span className="text-sm text-zinc-700 dark:text-zinc-300">Getting lost in a good book</span>
                   </li>
                   <li className="flex flex-col items-center gap-2 py-3 px-4 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f2c8d0]/50 text-zinc-700 dark:text-zinc-300">
                       <FiCamera className="h-6 w-6" />
                     </span>
                     <span className="text-sm text-zinc-700 dark:text-zinc-300">Capturing moments</span>
@@ -220,16 +203,44 @@ export default function ResumePage() {
                 </ul>
                 <ul className="mt-2 grid grid-cols-2 justify-items-center text-center">
                   <li className="flex flex-col items-center gap-2 py-3 px-4 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f2c8d0]/50 text-zinc-700 dark:text-zinc-300">
                       <FiMusic className="h-6 w-6" />
                     </span>
                     <span className="text-sm text-zinc-700 dark:text-zinc-300">Feeling the music</span>
                   </li>
                   <li className="flex flex-col items-center gap-2 py-3 px-4 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 dark:text-zinc-300">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f2c8d0]/50 text-zinc-700 dark:text-zinc-300">
                       <TbBallFootball className="h-6 w-6" />
                     </span>
                     <span className="text-sm text-zinc-700 dark:text-zinc-300">Every kind of sport</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/60 dark:bg-black/30">
+              <div className="flex items-center gap-2 px-5 pt-5">
+                <span className="inline-flex items-center gap-2 rounded-2xl bg-[#bcd0d9] px-4 py-2 text-sm font-semibold">
+                  <TbFlask className="h-4 w-4 rounded-full bg-[#9fb6c2] p-[2px]" />
+                  Skills
+                </span>
+              </div>
+              <div className="p-5 pt-3">
+                <ul className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
+                  <li className="flex items-center justify-between py-1.5">
+                    <span>React/Next/Node</span>
+                    <span className="font-semibold">Professional</span>
+                  </li>
+                  <li className="flex items-center justify-between py-1.5">
+                    <span>HTML/CSS</span>
+                    <span className="font-semibold">Professional</span>
+                  </li>
+                  <li className="flex items-center justify-between py-1.5">
+                    <span>Back-end Developer</span>
+                    <span className="font-semibold">Professional</span>
+                  </li>
+                  <li className="flex items-center justify-between py-1.5">
+                    <span>Web Application</span>
+                    <span className="font-semibold">Professional</span>
                   </li>
                 </ul>
               </div>
