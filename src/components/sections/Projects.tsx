@@ -180,7 +180,7 @@ export default function Projects() {
                     className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
                     priority={false}
                   />
-                  <div className="absolute inset-x-0 bottom-[4] flex justify-center z-50">
+                  <div className="absolute inset-x-0 bottom-[4] flex justify-center z-30">
                     <Link
                       href={p.link || "#"}
                       target={p.link ? "_blank" : "_self"}
