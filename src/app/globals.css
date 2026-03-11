@@ -22,14 +22,21 @@ body {
   font-family: var(--font-arabic), var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-.custom-cursor,
-.custom-cursor * {
-  cursor: none;
+@media (pointer: fine) {
+  .custom-cursor,
+  .custom-cursor * {
+    cursor: none;
+  }
+  .custom-cursor input,
+  .custom-cursor textarea {
+    cursor: text;
+  }
 }
 
-.custom-cursor input,
-.custom-cursor textarea {
-  cursor: text;
+@media (pointer: coarse) {
+  .custom-cursor-ui {
+    display: none;
+  }
 }
 
 ::selection {

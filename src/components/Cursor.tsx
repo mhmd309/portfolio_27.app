@@ -10,6 +10,8 @@ export default function Cursor() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const fine = window.matchMedia?.("(pointer: fine)").matches;
+    if (!fine) return;
     const updateHover = (el: Element | null) => {
       if (!el) {
         setHover(false);
@@ -49,12 +51,12 @@ export default function Cursor() {
     <>
       <div
         aria-hidden="true"
-        className={`pointer-events-none fixed left-0 top-0 z-[9999] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-zinc-900 transition-transform duration-100 ease-out dark:bg-zinc-100 ${dotScale}`}
+        className={`custom-cursor-ui pointer-events-none fixed left-0 top-0 z-[9999] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-zinc-900 transition-transform duration-100 ease-out dark:bg-zinc-100 ${dotScale}`}
         style={{ left: x, top: y }}
       />
       <div
         aria-hidden="true"
-        className={`pointer-events-none fixed left-0 top-0 z-[9998] h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border border-zinc-900/70 transition-transform duration-150 ease-out dark:border-zinc-100/70 ${ringScale}`}
+        className={`custom-cursor-ui pointer-events-none fixed left-0 top-0 z-[9998] h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border border-zinc-900/70 transition-transform duration-150 ease-out dark:border-zinc-100/70 ${ringScale}`}
         style={{ left: x, top: y }}
       />
     </>

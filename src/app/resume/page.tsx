@@ -181,7 +181,7 @@ export default function ResumePage() {
                 </span>
               </div>
               <div className="p-5 pt-4">
-                <ul className="grid grid-cols-3 justify-items-center gap-2 text-center">
+                <ul className="grid grid-cols-2 md:grid-cols-3 justify-items-center gap-2 text-center">
                   <li className="flex flex-col items-center gap-2 py-3 px-4 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f2c8d0]/50 text-zinc-700 dark:text-zinc-300">
                       <TbPlane className="h-6 w-6" />
