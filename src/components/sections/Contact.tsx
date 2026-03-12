@@ -141,7 +141,7 @@ export default function Contact() {
                 />
                 <label
                   htmlFor="contact-name"
-                  className="pointer-events-none absolute left-3 top-[50%] -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:-top-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:text-xs"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:top-0 peer-focus:translate-y-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs"
                 >
                   Name
                 </label>
@@ -178,7 +178,7 @@ export default function Contact() {
                 />
                 <label
                   htmlFor="contact-email"
-                  className="pointer-events-none absolute left-3 top-[50%] -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:-top-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:text-xs"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:top-0 peer-focus:translate-y-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs"
                 >
                   Email
                 </label>
@@ -213,7 +213,7 @@ export default function Contact() {
                 />
                 <label
                   htmlFor="contact-message"
-                  className="pointer-events-none absolute left-3 top-6 -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:-top-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:text-xs"
+                  className="pointer-events-none absolute left-3 top-6 -translate-y-1/2 bg-background px-1 text-zinc-500 transition-all duration-200 peer-focus:top-0 peer-focus:translate-y-0 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs"
                 >
                   Message
                 </label>
