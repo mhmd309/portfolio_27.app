@@ -78,12 +78,12 @@ export default function Projects() {
   return (
     <section id="projects" className="py-16 scroll-mt-24 lg:scroll-mt-28">
       <div className="mx-auto max-w-5xl">
-        <div className="flex items-center justify-between gap-3 mb-6">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col items-center justify-center text-center gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between sm:text-left">
+          <div className="flex items-center gap-3 justify-center">
             <FiFolder className="h-6 w-6" />
             <h2 className="text-2xl font-bold underline">Projects</h2>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs" role="tablist" aria-label="Projects filter">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:justify-start" role="tablist" aria-label="Projects filter">
             <button
               role="tab"
               aria-selected={tab === "all"}

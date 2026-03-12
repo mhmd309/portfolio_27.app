@@ -34,6 +34,15 @@ body {
 }
 
 @media (pointer: coarse) {
+  .custom-cursor,
+  .custom-cursor * {
+    cursor: none;
+  }
+  .custom-cursor input,
+  .custom-cursor textarea,
+  .custom-cursor [contenteditable] {
+    cursor: text;
+  }
   .custom-cursor-ui {
     display: none;
   }
