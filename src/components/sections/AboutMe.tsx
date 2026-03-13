@@ -49,7 +49,7 @@ function Stat({
 
 export default function AboutMe() {
   return (
-    <section id="about" className="py-16 scroll-mt-24 lg:scroll-mt-28">
+    <section id="about" className="py-16">
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="flex items-center gap-3">
           <FiUser className="h-6 w-6" />
