@@ -138,7 +138,7 @@ export default function ResumePage() {
               </div>
             </div>
 
-            
+
           </div>
 
           <div className="space-y-6">
@@ -200,8 +200,6 @@ export default function ResumePage() {
                     </span>
                     <span className="text-sm text-zinc-700 dark:text-zinc-300">Capturing moments</span>
                   </li>
-                </ul>
-                <ul className="mt-2 grid grid-cols-2 justify-items-center text-center">
                   <li className="flex flex-col items-center gap-2 py-3 px-4 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#f2c8d0]/50 text-zinc-700 dark:text-zinc-300">
                       <FiMusic className="h-6 w-6" />
