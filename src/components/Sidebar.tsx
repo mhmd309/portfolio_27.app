@@ -1,6 +1,6 @@
 "use client";
 
-import { FiUser, FiFolder, FiCode, FiMail, FiX, FiChevronLeft } from "react-icons/fi";
+import { FiUser, FiFolder, FiCode, FiMail, FiX } from "react-icons/fi";
 import { TbSlideshow } from "react-icons/tb";
 import clsx from "clsx";
 
@@ -106,10 +106,10 @@ export default function Sidebar({ open, onClose }: Props) {
             <button
               onClick={onClose}
               className="hidden lg:inline-flex rounded-md p-2 bg-zinc-100 cursor-pointer"
-              aria-label="Collapse sidebar"
-              title="Collapse"
+              aria-label="Close sidebar"
+              title="Close"
             >
-              <FiChevronLeft className="h-5 w-5" />
+              <FiX className="h-5 w-5" />
             </button>
           </div>
         </div>
