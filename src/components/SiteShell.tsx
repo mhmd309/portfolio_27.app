@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import Header from "src/components/Header";
 import Sidebar from "src/components/Sidebar";
 import Footer from "src/components/Footer";
-import FloatingVisitorToast from "src/components/FloatingVisitorToast";
 import ScrollTop from "src/components/ScrollTop";
  
  type Props = {
@@ -20,7 +19,6 @@ import ScrollTop from "src/components/ScrollTop";
       <div className={`${sidebarOpen ? "lg:pl-72" : "lg:pl-0"} min-h-screen flex flex-col transition-[padding]`}>
         <Header onToggleSidebar={() => setSidebarOpen((v) => !v)} />
         <main className="flex-1 px-4 sm:px-8 lg:px-16">{children}</main>
-        <FloatingVisitorToast />
         <ScrollTop />
         <Footer />
       </div>
