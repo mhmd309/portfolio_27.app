@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 const socials = [
   { href: "https://www.facebook.com/elseedi99", label: "Facebook", Icon: FaFacebookF },
   { href: "https://www.instagram.com/_e_m_a_r_a_", label: "Instagram", Icon: FaInstagram },
-  { href: "#", label: "LinkedIn", Icon: FaLinkedinIn },
+  { href: "https://www.linkedin.com/in/mohamed-elseedi/", label: "LinkedIn", Icon: FaLinkedinIn },
   { href: "https://github.com/mhmd309", label: "GitHub", Icon: FaGithub },
 ];
 

@@ -80,7 +80,7 @@ export default function ResumePage() {
             <div>
               <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none">Eng Mohamed Emara<span> .</span></h1>
               <ul className="mt-3 space-y-1.5 text-sm text-zinc-700 dark:text-zinc-300">
-                <li>Date of birth: 22/09/1996</li>
+                <li>Date of birth: 30/09/1996</li>
                 <li>Nationality: Egypt</li>
                 <li>Address: Daqahliya, Mansoura, Egypt</li>
                 <li>Phone number: 01020495108</li>
@@ -88,6 +88,17 @@ export default function ResumePage() {
                   Email address:{" "}
                   <a className="underline" href="mailto:m.elzero33@gmail.com">
                     m.elzero33@gmail.com
+                  </a>
+                </li>
+                <li>
+                  LinkedIn:{" "}
+                  <a
+                    className="underline"
+                    href="https://www.linkedin.com/in/mohamed-elseedi/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    linkedin.com/in/mohamed-elseedi
                   </a>
                 </li>
               </ul>

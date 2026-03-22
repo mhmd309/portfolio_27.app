@@ -62,7 +62,7 @@ export default function Contact() {
                   <FiGithub className="h-5 w-5" /> Github
                 </a>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/in/mohamed-elseedi/"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-zinc-200/60 dark:border-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-900"

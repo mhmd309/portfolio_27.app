@@ -73,7 +73,7 @@ export default function AboutMe() {
               <li className="flex items-center gap-2">
                 <FiChevronRight className="h-4 w-4" />
                 <span className="font-bold underline">Birthday:</span>
-                <span className="text-zinc-700">22/09/1996</span>
+                <span className="text-zinc-700">30/09/1996</span>
               </li>
               <li className="flex items-center gap-2">
                 <FiChevronRight className="h-4 w-4" />
