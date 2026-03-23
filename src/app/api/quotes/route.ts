@@ -45,19 +45,32 @@ function firebaseApp() {
 
   const svc = process.env.FIREBASE_SERVICE_ACCOUNT;
   if (svc && svc.trim()) {
-    const creds = JSON.parse(svc) as { project_id?: string; client_email?: string; private_key?: string };
+    let creds: { project_id?: string; client_email?: string; private_key?: string };
+    try {
+      creds = JSON.parse(svc) as { project_id?: string; client_email?: string; private_key?: string };
+    } catch {
+      throw new Error("FIREBASE_NOT_CONFIGURED");
+    }
     const projectId = creds.project_id || "";
     const clientEmail = creds.client_email || "";
     const privateKey = (creds.private_key || "").replace(/\\n/g, "\n");
     if (!projectId || !clientEmail || !privateKey) throw new Error("FIREBASE_NOT_CONFIGURED");
-    return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+    try {
+      return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+    } catch {
+      throw new Error("FIREBASE_NOT_CONFIGURED");
+    }
   }
 
   const projectId = process.env.FIREBASE_PROJECT_ID || "";
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || "";
   const privateKey = (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n");
   if (!projectId || !clientEmail || !privateKey) throw new Error("FIREBASE_NOT_CONFIGURED");
-  return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+  try {
+    return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+  } catch {
+    throw new Error("FIREBASE_NOT_CONFIGURED");
+  }
 }
 
 function quotesCollection() {
@@ -112,7 +125,7 @@ export async function GET(req: Request) {
     console.error("Quotes API GET error:", err);
     const msg = err instanceof Error ? err.message : "";
     if (msg === "FIREBASE_NOT_CONFIGURED") {
-      return NextResponse.json({ ok: false, error: "Firebase is not configured" }, { status: 503 });
+      return NextResponse.json({ ok: false, error: "Firebase admin credentials are missing or invalid" }, { status: 503 });
     }
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
@@ -172,7 +185,7 @@ export async function POST(req: Request) {
     console.error("Quotes API POST error:", err);
     const msg = err instanceof Error ? err.message : "";
     if (msg === "FIREBASE_NOT_CONFIGURED") {
-      return NextResponse.json({ ok: false, error: "Firebase is not configured" }, { status: 503 });
+      return NextResponse.json({ ok: false, error: "Firebase admin credentials are missing or invalid" }, { status: 503 });
     }
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
