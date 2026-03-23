@@ -60,7 +60,7 @@ export default function NewQuotePage() {
       setOk(true);
       setForm({ name: "", email: "", book: "", text: "" });
       setDirty({ name: false, email: false, book: false, text: false });
-      router.push("/quotes");
+      router.push(`/quotes?ts=${Date.now()}`);
     } catch {
       setOk(false);
       setError("Could not reach the server");
