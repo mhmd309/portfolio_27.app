@@ -62,8 +62,11 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const page = Math.max(1, Number(url.searchParams.get("page") || "1") || 1);
     const pageSize = Math.min(20, Math.max(1, Number(url.searchParams.get("pageSize") || "8") || 8));
+    const bookQuery = (url.searchParams.get("book") || "").trim();
+    const q = bookQuery.toLocaleLowerCase();
 
-    const all = await readAllQuotes();
+    const allRaw = await readAllQuotes();
+    const all = q ? allRaw.filter((x) => (x.book || "").trim().toLocaleLowerCase().includes(q)) : allRaw;
     all.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
     const total = all.length;
     const start = (page - 1) * pageSize;
