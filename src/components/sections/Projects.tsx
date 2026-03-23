@@ -155,7 +155,7 @@ export default function Projects() {
             {current.map((p: Project) => (
               <div
                 key={`${p.title}-${p.date}`}
-                className="group rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-black/30 overflow-hidden hover:cursor-pointer"
+                className="group rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-black/30 overflow-hidden hover:cursor-pointer flex flex-col"
               >
                 <div className="relative h-44 bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
                   {p.brand ? (
@@ -180,18 +180,8 @@ export default function Projects() {
                     className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
                     priority={false}
                   />
-                  <div className="absolute inset-x-0 bottom-[4] flex justify-center z-30">
-                    <Link
-                      href={p.link || "#"}
-                      target={p.link ? "_blank" : "_self"}
-                      className="group inline-flex items-center gap-2 rounded-md px-4 py-2 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/60 hover:border-zinc-800/60 hover:bg-black/100 hover:text-white cursor-pointer transition-colors duration-600"
-                    >
-                      <FiEye className="h-4 w-4" />
-                      <span>View Now</span>
-                    </Link>
-                  </div>
                 </div>
-                <div className="pt-6 p-2">
+                <div className="p-4 pt-4 flex flex-col flex-1">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1 font-semibold">
                       <FiFolder className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
@@ -201,6 +191,16 @@ export default function Projects() {
                       <FiCalendar className="h-4 w-4" />
                       <span>{formatDate(p.date)}</span>
                     </div>
+                  </div>
+                  <div className="mt-auto pt-4 flex justify-center">
+                    <Link
+                      href={p.link || "#"}
+                      target={p.link ? "_blank" : "_self"}
+                      className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/60 hover:border-zinc-800/60 hover:bg-black/100 hover:text-white cursor-pointer transition-colors duration-600 w-full"
+                    >
+                      <FiEye className="h-4 w-4" />
+                      <span>View Now</span>
+                    </Link>
                   </div>
                 </div>
               </div>

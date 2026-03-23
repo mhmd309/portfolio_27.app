@@ -1,6 +1,7 @@
 "use client";
 
 import { FiUser, FiFolder, FiCode, FiMail, FiX } from "react-icons/fi";
+import { FiFileText } from "react-icons/fi";
 import { TbSlideshow } from "react-icons/tb";
 import clsx from "clsx";
 
@@ -8,11 +9,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 const items = [
-  { href: "#hero", label: "HOME", Icon: TbSlideshow },
-  { href: "#about", label: "ABOUT ME", Icon: FiUser },
-  { href: "#projects", label: "PROJECTS", Icon: FiFolder },
-  { href: "#skills", label: "SKILLS", Icon: FiCode },
-  { href: "#contact", label: "CONTACT ME", Icon: FiMail },
+  { href: "#hero", label: "HOME", Icon: TbSlideshow, type: "section" as const },
+  { href: "#about", label: "ABOUT ME", Icon: FiUser, type: "section" as const },
+  { href: "#projects", label: "PROJECTS", Icon: FiFolder, type: "section" as const },
+  { href: "#skills", label: "SKILLS", Icon: FiCode, type: "section" as const },
+  { href: "#contact", label: "CONTACT ME", Icon: FiMail, type: "section" as const },
+  { href: "/quotes", label: "BOOK QUOTES", Icon: FiFileText, type: "route" as const },
 ];
 
 type Props = {
@@ -24,14 +26,18 @@ export default function Sidebar({ open, onClose }: Props) {
   const [active, setActive] = useState<string>("#hero");
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const activeHref = pathname?.startsWith("/quotes") ? "/quotes" : active;
   useEffect(() => {
+    if (!isHome) return;
     const elems = items
+      .filter((i) => i.type === "section")
       .map(({ href }) => document.querySelector(href) as HTMLElement | null)
       .filter(Boolean) as HTMLElement[];
     if (elems.length === 0) return;
     const updateByScroll = () => {
       const y = Math.floor(window.innerHeight * 0.35);
       for (const { href } of items) {
+        if (!href.startsWith("#")) continue;
         const el = document.querySelector(href) as HTMLElement | null;
         if (!el) continue;
         const r = el.getBoundingClientRect();
@@ -75,7 +81,7 @@ export default function Sidebar({ open, onClose }: Props) {
       window.removeEventListener("resize", onScroll);
       ro?.disconnect();
     };
-  }, []);
+  }, [isHome]);
   return (
     <>
       <div
@@ -115,18 +121,18 @@ export default function Sidebar({ open, onClose }: Props) {
         </div>
         <nav className="px-2 py-4">
           <ul className="space-y-1">
-            {items.map(({ href, label, Icon }) => (
+            {items.map(({ href, label, Icon, type }) => (
               <li key={href}>
                 <Link
-                  href={isHome ? href : `/${href}`}
-                  aria-current={active === href ? "page" : undefined}
+                  href={type === "route" ? href : isHome ? href : `/${href}`}
+                  aria-current={activeHref === href ? "page" : undefined}
                   onClick={() => {
                     setActive(href);
                     if (window.innerWidth < 1024) onClose();
                   }}
                   className={clsx(
                     "group relative overflow-hidden flex items-center gap-3 rounded-md px-3 py-2 text-zinc-700 cursor-pointer transition-colors duration-200 ease-out",
-                    active === href &&
+                    activeHref === href &&
                       "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 ring-1 ring-zinc-300/60 dark:ring-zinc-700/60"
                   )}
                 >
@@ -137,14 +143,19 @@ export default function Sidebar({ open, onClose }: Props) {
                       "w-0 group-hover:w-full"
                     )}
                   />
-                  {active === href ? (
+                  {activeHref === href ? (
                     <span
                       aria-hidden
                       className="absolute left-0 top-1/2 -translate-y-1/2 h-3/5 w-[3px] rounded-r bg-zinc-900 dark:bg-zinc-100"
                     />
                   ) : null}
-                  <Icon className={clsx("relative z-10 h-5 w-5", active === href && "text-zinc-900 dark:text-zinc-100")} />
-                  <span className={clsx("relative z-10", active === href && "font-semibold")}>{label}</span>
+                  <Icon
+                    className={clsx(
+                      "relative z-10 h-5 w-5",
+                      activeHref === href && "text-zinc-900 dark:text-zinc-100"
+                    )}
+                  />
+                  <span className={clsx("relative z-10", activeHref === href && "font-semibold")}>{label}</span>
                 </Link>
               </li>
             ))}
