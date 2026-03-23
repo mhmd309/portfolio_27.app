@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type FormState = {
@@ -11,6 +12,7 @@ type FormState = {
 };
 
 export default function NewQuotePage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState<null | boolean>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +60,7 @@ export default function NewQuotePage() {
       setOk(true);
       setForm({ name: "", email: "", book: "", text: "" });
       setDirty({ name: false, email: false, book: false, text: false });
+      router.push("/quotes");
     } catch {
       setOk(false);
       setError("Could not reach the server");

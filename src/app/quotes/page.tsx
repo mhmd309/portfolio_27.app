@@ -15,6 +15,7 @@ type Quote = {
 };
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -29,7 +30,7 @@ function isRtlText(text: string) {
 function storePath() {
   const fromEnv = process.env.QUOTES_STORE_PATH;
   if (fromEnv) return fromEnv;
-  if (process.env.VERCEL) return path.join(os.tmpdir(), "cv2027", "quotes.json");
+  if (process.env.VERCEL) return path.join(os.tmpdir(), "portfolio_27.app", "quotes.json");
   return path.join(process.cwd(), "data", "quotes.json");
 }
 
