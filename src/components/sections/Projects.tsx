@@ -196,7 +196,7 @@ export default function Projects() {
                     <Link
                       href={p.link || "#"}
                       target={p.link ? "_blank" : "_self"}
-                      className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/60 hover:border-zinc-800/60 hover:bg-black/100 hover:text-white cursor-pointer transition-colors duration-600 w-full"
+                      className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 bg-[#f3f3f3] dark:bg-zinc-900/95 border border-zinc-200/60 hover:border-zinc-800/60 hover:bg-black/100 hover:text-white cursor-pointer transition-colors duration-600 w-full"
                     >
                       <FiEye className="h-4 w-4" />
                       <span>View Now</span>
