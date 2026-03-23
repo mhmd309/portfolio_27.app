@@ -22,8 +22,30 @@ type Body = {
   text?: string;
 };
 
+type GitHubConfig = {
+  token: string;
+  repo: string;
+  filePath: string;
+  branch: string;
+};
+
 function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function githubConfig(): GitHubConfig | null {
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPO;
+  if (!token || !repo) return null;
+  const filePath = process.env.GITHUB_QUOTES_PATH || "data/quotes.json";
+  const branch = process.env.GITHUB_BRANCH || "main";
+  return { token, repo, filePath, branch };
+}
+
+function githubContentsUrl(cfg: GitHubConfig) {
+  const encodedPath = cfg.filePath.split("/").map(encodeURIComponent).join("/");
+  const encodedRepo = cfg.repo.split("/").map(encodeURIComponent).join("/");
+  return `https://api.github.com/repos/${encodedRepo}/contents/${encodedPath}?ref=${encodeURIComponent(cfg.branch)}`;
 }
 
 function storePath() {
@@ -33,7 +55,65 @@ function storePath() {
   return path.join(process.cwd(), "data", "quotes.json");
 }
 
-async function readAll(): Promise<Quote[]> {
+async function readAllFromGitHub(cfg: GitHubConfig): Promise<{ sha?: string; quotes: Quote[] }> {
+  const res = await fetch(githubContentsUrl(cfg), {
+    headers: {
+      Authorization: `Bearer ${cfg.token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+    cache: "no-store",
+  });
+  if (res.status === 404) return { quotes: [] };
+  if (!res.ok) throw new Error(`GITHUB_READ_${res.status}`);
+  const json = (await res.json()) as { sha?: string; content?: string; encoding?: string };
+  const content = typeof json.content === "string" ? json.content : "";
+  const encoding = typeof json.encoding === "string" ? json.encoding : "";
+  if (!content || encoding !== "base64") return { sha: json.sha, quotes: [] };
+  const raw = Buffer.from(content, "base64").toString("utf8");
+  const data = JSON.parse(raw) as unknown;
+  if (!Array.isArray(data)) return { sha: json.sha, quotes: [] };
+  return { sha: json.sha, quotes: data.filter(Boolean) as Quote[] };
+}
+
+async function writeAllToGitHub(cfg: GitHubConfig, quotes: Quote[]) {
+  const putUrl = githubContentsUrl(cfg).replace(/\?ref=.*/, "");
+  const content = Buffer.from(JSON.stringify(quotes, null, 2), "utf8").toString("base64");
+
+  const attempt = async (sha?: string) => {
+    const res = await fetch(putUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${cfg.token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `chore(quotes): add quote ${new Date().toISOString()}`,
+        content,
+        sha,
+        branch: cfg.branch,
+      }),
+    });
+    if (!res.ok) throw new Error(`GITHUB_WRITE_${res.status}`);
+  };
+
+  try {
+    const current = await readAllFromGitHub(cfg);
+    await attempt(current.sha);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "GITHUB_WRITE_409" || msg === "GITHUB_WRITE_422") {
+      const current = await readAllFromGitHub(cfg);
+      await attempt(current.sha);
+      return;
+    }
+    throw err;
+  }
+}
+
+async function readAllFromFile(): Promise<Quote[]> {
   const p = storePath();
   try {
     const raw = await fs.readFile(p, "utf8");
@@ -45,10 +125,25 @@ async function readAll(): Promise<Quote[]> {
   }
 }
 
-async function writeAll(quotes: Quote[]) {
+async function writeAllToFile(quotes: Quote[]) {
   const p = storePath();
   await fs.mkdir(path.dirname(p), { recursive: true });
   await fs.writeFile(p, JSON.stringify(quotes, null, 2), "utf8");
+}
+
+async function readAll(): Promise<Quote[]> {
+  const cfg = githubConfig();
+  if (cfg) return (await readAllFromGitHub(cfg)).quotes;
+  return readAllFromFile();
+}
+
+async function writeAll(quotes: Quote[]) {
+  const cfg = githubConfig();
+  if (cfg) {
+    await writeAllToGitHub(cfg, quotes);
+    return;
+  }
+  await writeAllToFile(quotes);
 }
 
 export async function GET(req: Request) {

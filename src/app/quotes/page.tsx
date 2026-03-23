@@ -19,6 +19,13 @@ export const dynamic = "force-dynamic";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
+type GitHubConfig = {
+  token: string;
+  repo: string;
+  filePath: string;
+  branch: string;
+};
+
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
@@ -34,7 +41,45 @@ function storePath() {
   return path.join(process.cwd(), "data", "quotes.json");
 }
 
+function githubConfig(): GitHubConfig | null {
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPO;
+  if (!token || !repo) return null;
+  const filePath = process.env.GITHUB_QUOTES_PATH || "data/quotes.json";
+  const branch = process.env.GITHUB_BRANCH || "main";
+  return { token, repo, filePath, branch };
+}
+
+function githubContentsUrl(cfg: GitHubConfig) {
+  const encodedPath = cfg.filePath.split("/").map(encodeURIComponent).join("/");
+  const encodedRepo = cfg.repo.split("/").map(encodeURIComponent).join("/");
+  return `https://api.github.com/repos/${encodedRepo}/contents/${encodedPath}?ref=${encodeURIComponent(cfg.branch)}`;
+}
+
+async function readAllFromGitHub(cfg: GitHubConfig): Promise<Quote[]> {
+  const res = await fetch(githubContentsUrl(cfg), {
+    headers: {
+      Authorization: `Bearer ${cfg.token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+    cache: "no-store",
+  });
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error(`GITHUB_READ_${res.status}`);
+  const json = (await res.json()) as { content?: string; encoding?: string };
+  const content = typeof json.content === "string" ? json.content : "";
+  const encoding = typeof json.encoding === "string" ? json.encoding : "";
+  if (!content || encoding !== "base64") return [];
+  const raw = Buffer.from(content, "base64").toString("utf8");
+  const data = JSON.parse(raw) as unknown;
+  if (!Array.isArray(data)) return [];
+  return data.filter(Boolean) as Quote[];
+}
+
 async function readAll(): Promise<Quote[]> {
+  const cfg = githubConfig();
+  if (cfg) return readAllFromGitHub(cfg);
   const p = storePath();
   try {
     const raw = await fs.readFile(p, "utf8");
