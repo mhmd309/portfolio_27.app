@@ -120,3 +120,65 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const url = new URL(req.url);
+    const id = (url.searchParams.get("id") || "").trim();
+    if (!id) return NextResponse.json({ ok: false, error: "Missing id" }, { status: 400 });
+
+    let data: Body;
+    try {
+      data = (await req.json()) as Body;
+    } catch {
+      return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
+    }
+
+    const all = await readAllQuotes();
+    const idx = all.findIndex((q) => q.id === id);
+    if (idx < 0) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
+
+    const prev = all[idx];
+    const name = typeof data.name === "string" ? data.name.trim() : prev.name;
+    const email = typeof data.email === "string" ? data.email.trim() : prev.email;
+    const book = typeof data.book === "string" ? data.book.trim() : prev.book;
+    const text = typeof data.text === "string" ? data.text.trim() : prev.text;
+
+    if (name.length < 2 || name.length > 80) {
+      return NextResponse.json({ ok: false, error: "Invalid name" }, { status: 400 });
+    }
+    if (!isEmail(email)) {
+      return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
+    }
+    if (book.length < 2 || book.length > 160) {
+      return NextResponse.json({ ok: false, error: "Invalid book" }, { status: 400 });
+    }
+    if (text.length < 3 || text.length > 1200) {
+      return NextResponse.json({ ok: false, error: "Invalid text" }, { status: 400 });
+    }
+
+    all[idx] = { ...prev, name, email, book, text };
+    await writeAllQuotes(all);
+    return NextResponse.json({ ok: true });
+  } catch (err: unknown) {
+    console.error("Quotes API PATCH error:", err);
+    return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const url = new URL(req.url);
+    const id = (url.searchParams.get("id") || "").trim();
+    if (!id) return NextResponse.json({ ok: false, error: "Missing id" }, { status: 400 });
+
+    const all = await readAllQuotes();
+    const next = all.filter((q) => q.id !== id);
+    if (next.length === all.length) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
+    await writeAllQuotes(next);
+    return NextResponse.json({ ok: true });
+  } catch (err: unknown) {
+    console.error("Quotes API DELETE error:", err);
+    return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+  }
+}

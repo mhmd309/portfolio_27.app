@@ -2,6 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { FiBookOpen } from "react-icons/fi";
 import QuoteCopyButton from "src/components/QuoteCopyButton";
+import QuoteItemActions from "src/components/QuoteItemActions";
 
 type Quote = {
   id: string;
@@ -89,7 +90,12 @@ export default async function QuotesPage({ searchParams }: Props) {
     <section className="py-10 sm:py-14">
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Book Quotes</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Book Quotes</h1>
+            <span className="inline-flex items-center justify-center rounded-full border border-zinc-200/60 dark:border-zinc-800/60 bg-black text-white dark:bg-black/30 px-2.5 py-1 text-sm font-semibold tabular-nums">
+              {total}
+            </span>
+          </div>
           <Link className="underline text-sm" href="/quotes/new">
             Add Quote
           </Link>
@@ -98,14 +104,24 @@ export default async function QuotesPage({ searchParams }: Props) {
         <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 p-6 bg-white/50 dark:bg-black/30">
           {items.length > 0 ? (
             <div className="grid gap-4">
-              {items.map((q) => {
+              {items.map((q, idx) => {
                 const rtl = isRtlText(`${q.book} ${q.text} ${q.name}`);
+                const n = idx + 1;
                 return (
                   <div
                     key={q.id}
                     dir={rtl ? "rtl" : "ltr"}
-                    className="rounded-lg border border-zinc-200/60 dark:border-zinc-800/60 bg-background p-4"
+                    className="relative rounded-lg border border-zinc-200/60 dark:border-zinc-800/60 bg-background p-4"
                   >
+                    <div
+                      className={
+                        "absolute bottom-3 " +
+                        (rtl ? "left-3 " : "right-3 ") +
+                        "inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-zinc-200/60 dark:border-zinc-800/60 bg-white/70 dark:bg-black/40 px-2 text-sm font-bold font-mono text-zinc-900 dark:text-zinc-100 shadow-sm"
+                      }
+                    >
+                      {n}
+                    </div>
                     <div
                       className="flex flex-wrap items-start justify-between gap-3"
                     >
@@ -137,7 +153,10 @@ export default async function QuotesPage({ searchParams }: Props) {
                           {new Date(q.createdAt).toLocaleDateString(rtl ? "ar-EG" : "en-US")}
                         </div>
                       </div>
-                      <QuoteCopyButton text={q.text} locale={rtl ? "ar" : "en"} />
+                      <div className="flex items-center gap-2 shrink-0">
+                        <QuoteCopyButton text={q.text} locale={rtl ? "ar" : "en"} />
+                        <QuoteItemActions quote={q} rtl={rtl} />
+                      </div>
                     </div>
                   </div>
                 );

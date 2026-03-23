@@ -14,8 +14,6 @@ type FormState = {
 export default function NewQuotePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [ok, setOk] = useState<null | boolean>(null);
-  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>({ name: "", email: "", book: "", text: "" });
   const [dirty, setDirty] = useState({ name: false, email: false, book: false, text: false });
 
@@ -36,8 +34,6 @@ export default function NewQuotePage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setDirty({ name: true, email: true, book: true, text: true });
-    setOk(null);
-    setError(null);
     if (!valid) return;
     setLoading(true);
     try {
@@ -48,17 +44,21 @@ export default function NewQuotePage() {
       });
       const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
       if (!res.ok || !data?.ok) {
-        setOk(false);
-        setError(data?.error || `Request failed (${res.status})`);
+        window.dispatchEvent(
+          new CustomEvent("app:toast", {
+            detail: { variant: "error", message: data?.error || `Request failed (${res.status})` },
+          })
+        );
         return;
       }
-      setOk(true);
+      window.dispatchEvent(new CustomEvent("app:toast", { detail: { variant: "success", message: "تمت الإضافة بنجاح" } }));
       setForm({ name: "", email: "", book: "", text: "" });
       setDirty({ name: false, email: false, book: false, text: false });
       router.push(`/quotes?ts=${Date.now()}`);
     } catch {
-      setOk(false);
-      setError("Could not reach the server");
+      window.dispatchEvent(
+        new CustomEvent("app:toast", { detail: { variant: "error", message: "تعذر الاتصال بالخادم" } })
+      );
     } finally {
       setLoading(false);
     }
@@ -132,15 +132,12 @@ export default function NewQuotePage() {
 
             <div className="flex flex-wrap items-center justify-between gap-3">
               <button
-                disabled={loading}
+                disabled={!valid || loading}
                 type="submit"
                 className="inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed rounded-md px-4 py-2 bg-zinc-900 text-white disabled:opacity-60 dark:bg-zinc-100 dark:text-black"
               >
                 {loading ? "Publishing..." : "Publish"}
               </button>
-
-              {ok === true ? <span className="text-sm text-green-700">Published successfully</span> : null}
-              {ok === false ? <span className="text-sm text-red-600">{error || "Something went wrong"}</span> : null}
             </div>
           </form>
         </div>

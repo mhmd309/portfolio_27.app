@@ -22,6 +22,10 @@ body {
   font-family: var(--font-arabic), var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+textarea {
+  resize: none;
+}
+
 @media (pointer: fine) {
   .custom-cursor,
   .custom-cursor * {
