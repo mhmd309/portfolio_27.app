@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { promises as fs } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { FiBookOpen } from "react-icons/fi";
 import QuoteCopyButton from "src/components/QuoteCopyButton";
@@ -26,6 +27,9 @@ function isRtlText(text: string) {
 }
 
 function storePath() {
+  const fromEnv = process.env.QUOTES_STORE_PATH;
+  if (fromEnv) return fromEnv;
+  if (process.env.VERCEL) return path.join(os.tmpdir(), "cv2027", "quotes.json");
   return path.join(process.cwd(), "data", "quotes.json");
 }
 

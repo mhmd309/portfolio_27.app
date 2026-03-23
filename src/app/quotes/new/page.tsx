@@ -41,13 +41,18 @@ export default function NewQuotePage() {
     try {
       const res = await fetch("/api/quotes", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: nameVal, email: emailVal, book: bookVal, text: textVal }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      let data: { ok?: boolean; error?: string } | null = null;
+      try {
+        data = (await res.json()) as { ok?: boolean; error?: string };
+      } catch {
+        data = null;
+      }
       if (!res.ok || !data?.ok) {
         setOk(false);
-        setError(data?.error || "Something went wrong while publishing");
+        setError(data?.error || `Request failed (${res.status})`);
         return;
       }
       setOk(true);
