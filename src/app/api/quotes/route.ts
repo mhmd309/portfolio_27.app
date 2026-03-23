@@ -27,6 +27,22 @@ function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
+function isFirestoreApiDisabledError(err: unknown) {
+  if (!err || typeof err !== "object") return false;
+  const e = err as {
+    code?: unknown;
+    details?: unknown;
+    reason?: unknown;
+    message?: unknown;
+  };
+  const code = typeof e.code === "number" ? e.code : undefined;
+  const details = typeof e.details === "string" ? e.details : "";
+  const reason = typeof e.reason === "string" ? e.reason : "";
+  const message = typeof e.message === "string" ? e.message : "";
+  const text = `${details}\n${message}`;
+  return code === 7 && (reason === "SERVICE_DISABLED" || text.includes("firestore.googleapis.com"));
+}
+
 function storageInfo(): StorageInfo {
   return { mode: "firestore", persistent: true };
 }
@@ -127,6 +143,16 @@ export async function GET(req: Request) {
     if (msg === "FIREBASE_NOT_CONFIGURED") {
       return NextResponse.json({ ok: false, error: "Firebase admin credentials are missing or invalid" }, { status: 503 });
     }
+    if (isFirestoreApiDisabledError(err)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Cloud Firestore API is disabled for this project",
+          hint: "Enable Firestore API (firestore.googleapis.com) for your GCP project, then retry.",
+        },
+        { status: 503 },
+      );
+    }
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
 }
@@ -186,6 +212,16 @@ export async function POST(req: Request) {
     const msg = err instanceof Error ? err.message : "";
     if (msg === "FIREBASE_NOT_CONFIGURED") {
       return NextResponse.json({ ok: false, error: "Firebase admin credentials are missing or invalid" }, { status: 503 });
+    }
+    if (isFirestoreApiDisabledError(err)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Cloud Firestore API is disabled for this project",
+          hint: "Enable Firestore API (firestore.googleapis.com) for your GCP project, then retry.",
+        },
+        { status: 503 },
+      );
     }
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
