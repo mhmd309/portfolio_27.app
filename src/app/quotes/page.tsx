@@ -134,15 +134,13 @@ export default async function QuotesPage({ searchParams }: Props) {
                     className="rounded-lg border border-zinc-200/60 dark:border-zinc-800/60 bg-background p-4"
                   >
                     <div
-                      className={
-                        "flex flex-wrap items-start justify-between gap-3 " + (rtl ? "flex-row-reverse" : "")
-                      }
+                      className="flex flex-wrap items-start justify-between gap-3"
                     >
                       <div className="min-w-0">
                         <div
                           className={
                             "inline-flex max-w-full items-center gap-2 rounded-md bg-zinc-100 dark:bg-zinc-900 px-2.5 py-1 text-sm font-semibold text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-800/60 " +
-                            (rtl ? "flex-row-reverse" : "")
+                            ""
                           }
                         >
                           <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white dark:bg-black/30 border border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 shrink-0">
