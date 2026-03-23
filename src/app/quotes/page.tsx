@@ -74,99 +74,101 @@ export default async function QuotesPage({ searchParams }: Props) {
 
         <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 p-6 bg-white/50 dark:bg-black/30">
           {items.length > 0 ? (
-              <div className="grid gap-4">
-                {items.map((q) => {
-                  const rtl = isRtlText(`${q.book} ${q.text} ${q.name}`);
-                  return (
+            <div className="grid gap-4">
+              {items.map((q) => {
+                const rtl = isRtlText(`${q.book} ${q.text} ${q.name}`);
+                return (
+                  <div
+                    key={q.id}
+                    dir={rtl ? "rtl" : "ltr"}
+                    className="rounded-lg border border-zinc-200/60 dark:border-zinc-800/60 bg-background p-4"
+                  >
                     <div
-                      key={q.id}
-                      dir={rtl ? "rtl" : "ltr"}
-                      className="rounded-lg border border-zinc-200/60 dark:border-zinc-800/60 bg-background p-4"
+                      className={
+                        "flex flex-wrap items-start justify-between gap-3 " + (rtl ? "flex-row-reverse" : "")
+                      }
                     >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className={"min-w-0 " + (rtl ? "order-2" : "order-1")}>
-                          <div
-                            className={
-                              "inline-flex max-w-full items-center gap-2 rounded-md bg-zinc-100 dark:bg-zinc-900 px-2.5 py-1 text-sm font-semibold text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-800/60 " +
-                              (rtl ? "flex-row-reverse" : "")
-                            }
-                          >
-                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white dark:bg-black/30 border border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 shrink-0">
-                              <FiBookOpen className="h-4 w-4" />
-                            </span>
-                            <span dir={rtl ? "rtl" : "ltr"} className="truncate">
-                              {q.book}
-                            </span>
-                          </div>
-                          <div
-                            dir={rtl ? "rtl" : "ltr"}
-                            className={
-                              "mt-2 text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap break-words " +
-                              (rtl ? "text-right" : "text-left")
-                            }
-                          >
-                            {q.text}
-                          </div>
-                          <div className={"mt-3 text-xs text-zinc-500 " + (rtl ? "text-right" : "text-left")}>
-                            {rtl ? "بواسطة" : "By"} {q.name} •{" "}
-                            {new Date(q.createdAt).toLocaleDateString(rtl ? "ar-EG" : "en-US")}
-                          </div>
+                      <div className="min-w-0">
+                        <div
+                          className={
+                            "inline-flex max-w-full items-center gap-2 rounded-md bg-zinc-100 dark:bg-zinc-900 px-2.5 py-1 text-sm font-semibold text-zinc-900 dark:text-zinc-100 border border-zinc-200/60 dark:border-zinc-800/60 " +
+                            (rtl ? "flex-row-reverse" : "")
+                          }
+                        >
+                          <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white dark:bg-black/30 border border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 shrink-0">
+                            <FiBookOpen className="h-4 w-4" />
+                          </span>
+                          <span dir={rtl ? "rtl" : "ltr"} className="truncate">
+                            {q.book}
+                          </span>
                         </div>
-                        <div className={rtl ? "order-1" : "order-2"}>
-                          <QuoteCopyButton text={q.text} locale={rtl ? "ar" : "en"} />
+                        <div
+                          dir={rtl ? "rtl" : "ltr"}
+                          className={
+                            "mt-2 text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap break-words " +
+                            (rtl ? "text-right" : "text-left")
+                          }
+                        >
+                          {q.text}
+                        </div>
+                        <div className={"mt-3 text-xs text-zinc-500 " + (rtl ? "text-right" : "text-left")}>
+                          {rtl ? "بواسطة" : "By"} {q.name} •{" "}
+                          {new Date(q.createdAt).toLocaleDateString(rtl ? "ar-EG" : "en-US")}
                         </div>
                       </div>
+                      <QuoteCopyButton text={q.text} locale={rtl ? "ar" : "en"} />
                     </div>
-                  );
-                })}
-
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                  <Link
-                    aria-disabled={page <= 1}
-                    className={
-                      (page <= 1 ? "pointer-events-none opacity-50 " : "") +
-                      "inline-flex items-center justify-center rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm"
-                    }
-                    href={`/quotes?page=${Math.max(1, page - 1)}`}
-                  >
-                    Prev
-                  </Link>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {pages.map((p) => (
-                      <Link
-                        key={p}
-                        className={
-                          (p === page
-                            ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black "
-                            : "bg-transparent ") +
-                          "inline-flex items-center justify-center rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm"
-                        }
-                        href={`/quotes?page=${p}`}
-                      >
-                        {p}
-                      </Link>
-                    ))}
                   </div>
-                  <Link
-                    aria-disabled={page >= totalPages}
-                    className={
-                      (page >= totalPages ? "pointer-events-none opacity-50 " : "") +
-                      "inline-flex items-center justify-center rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm"
-                    }
-                    href={`/quotes?page=${Math.min(totalPages, page + 1)}`}
-                  >
-                    Next
-                  </Link>
-                </div>
-              </div>
-          ) : (
-              <div className="text-sm text-zinc-600 dark:text-zinc-300">
-                No quotes yet.{" "}
-                <Link href="/quotes/new" className="underline">
-                  Add the first one
+                );
+              })}
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <Link
+                  aria-disabled={page <= 1}
+                  className={
+                    (page <= 1 ? "pointer-events-none opacity-50 " : "") +
+                    "inline-flex items-center justify-center rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm"
+                  }
+                  href={`/quotes?page=${Math.max(1, page - 1)}`}
+                >
+                  Prev
                 </Link>
-                .
+                <div className="flex flex-wrap items-center gap-2">
+                  {pages.map((p) => (
+                    <Link
+                      key={p}
+                      className={
+                        (p === page
+                          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black "
+                          : "bg-transparent ") +
+                        "inline-flex items-center justify-center rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm"
+                      }
+                      href={`/quotes?page=${p}`}
+                    >
+                      {p}
+                    </Link>
+                  ))}
+                </div>
+                <Link
+                  aria-disabled={page >= totalPages}
+                  className={
+                    (page >= totalPages ? "pointer-events-none opacity-50 " : "") +
+                    "inline-flex items-center justify-center rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm"
+                  }
+                  href={`/quotes?page=${Math.min(totalPages, page + 1)}`}
+                >
+                  Next
+                </Link>
               </div>
+            </div>
+          ) : (
+            <div className="text-sm text-zinc-600 dark:text-zinc-300">
+              No quotes yet.{" "}
+              <Link href="/quotes/new" className="underline">
+                Add the first one
+              </Link>
+              .
+            </div>
           )}
         </div>
       </div>
