@@ -29,6 +29,10 @@ type GitHubConfig = {
   branch: string;
 };
 
+type StorageInfo =
+  | { mode: "github"; persistent: true }
+  | { mode: "file"; persistent: boolean };
+
 function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
@@ -53,6 +57,12 @@ function storePath() {
   if (fromEnv) return fromEnv;
   if (process.env.VERCEL) return path.join(os.tmpdir(), "portfolio_27.app", "quotes.json");
   return path.join(process.cwd(), "data", "quotes.json");
+}
+
+function storageInfo(): StorageInfo {
+  if (githubConfig()) return { mode: "github", persistent: true };
+  const persistent = Boolean(process.env.QUOTES_STORE_PATH) || !process.env.VERCEL;
+  return { mode: "file", persistent };
 }
 
 async function readAllFromGitHub(cfg: GitHubConfig): Promise<{ sha?: string; quotes: Quote[] }> {
@@ -158,7 +168,7 @@ export async function GET(req: Request) {
     const start = (page - 1) * pageSize;
     const items = sorted.slice(start, start + pageSize);
 
-    return NextResponse.json({ ok: true, page, pageSize, total, items });
+    return NextResponse.json({ ok: true, page, pageSize, total, items, storage: storageInfo() });
   } catch (err: unknown) {
     console.error("Quotes API GET error:", err);
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
@@ -167,6 +177,10 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    if (!githubConfig() && process.env.VERCEL && !process.env.QUOTES_STORE_PATH) {
+      return NextResponse.json({ ok: false, error: "Quotes storage is not configured" }, { status: 503 });
+    }
+
     let data: Body;
     try {
       data = (await req.json()) as Body;
@@ -206,6 +220,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, item: q }, { status: 201 });
   } catch (err: unknown) {
     console.error("Quotes API POST error:", err);
+    const msg = err instanceof Error ? err.message : "";
+    if (/^GITHUB_(READ|WRITE)_\d+$/.test(msg)) {
+      const status = Number(msg.split("_").at(-1) || "0") || 500;
+      return NextResponse.json({ ok: false, error: `GitHub storage error (${status})` }, { status: 502 });
+    }
     const code = err && typeof err === "object" && "code" in err ? String((err as { code?: unknown }).code) : "";
     if (code === "EROFS" || code === "EPERM" || code === "EACCES") {
       return NextResponse.json({ ok: false, error: "Server storage is not writable" }, { status: 500 });

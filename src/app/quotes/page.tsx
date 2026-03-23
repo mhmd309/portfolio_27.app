@@ -57,24 +57,28 @@ function githubContentsUrl(cfg: GitHubConfig) {
 }
 
 async function readAllFromGitHub(cfg: GitHubConfig): Promise<Quote[]> {
-  const res = await fetch(githubContentsUrl(cfg), {
-    headers: {
-      Authorization: `Bearer ${cfg.token}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-    cache: "no-store",
-  });
-  if (res.status === 404) return [];
-  if (!res.ok) throw new Error(`GITHUB_READ_${res.status}`);
-  const json = (await res.json()) as { content?: string; encoding?: string };
-  const content = typeof json.content === "string" ? json.content : "";
-  const encoding = typeof json.encoding === "string" ? json.encoding : "";
-  if (!content || encoding !== "base64") return [];
-  const raw = Buffer.from(content, "base64").toString("utf8");
-  const data = JSON.parse(raw) as unknown;
-  if (!Array.isArray(data)) return [];
-  return data.filter(Boolean) as Quote[];
+  try {
+    const res = await fetch(githubContentsUrl(cfg), {
+      headers: {
+        Authorization: `Bearer ${cfg.token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      cache: "no-store",
+    });
+    if (res.status === 404) return [];
+    if (!res.ok) return [];
+    const json = (await res.json()) as { content?: string; encoding?: string };
+    const content = typeof json.content === "string" ? json.content : "";
+    const encoding = typeof json.encoding === "string" ? json.encoding : "";
+    if (!content || encoding !== "base64") return [];
+    const raw = Buffer.from(content, "base64").toString("utf8");
+    const data = JSON.parse(raw) as unknown;
+    if (!Array.isArray(data)) return [];
+    return data.filter(Boolean) as Quote[];
+  } catch {
+    return [];
+  }
 }
 
 async function readAll(): Promise<Quote[]> {
