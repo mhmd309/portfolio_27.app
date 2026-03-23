@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
-import { cert, getApps, initializeApp } from "firebase-admin/app";
-import { Timestamp, getFirestore } from "firebase-admin/firestore";
+import path from "node:path";
+import fs from "node:fs/promises";
 
 export const runtime = "nodejs";
 
@@ -21,79 +21,40 @@ type Body = {
   text?: string;
 };
 
-type StorageInfo = { mode: "firestore"; persistent: true };
-
 function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
-function isFirestoreApiDisabledError(err: unknown) {
-  if (!err || typeof err !== "object") return false;
-  const e = err as {
-    code?: unknown;
-    details?: unknown;
-    reason?: unknown;
-    message?: unknown;
-  };
-  const code = typeof e.code === "number" ? e.code : undefined;
-  const details = typeof e.details === "string" ? e.details : "";
-  const reason = typeof e.reason === "string" ? e.reason : "";
-  const message = typeof e.message === "string" ? e.message : "";
-  const text = `${details}\n${message}`;
-  return code === 7 && (reason === "SERVICE_DISABLED" || text.includes("firestore.googleapis.com"));
+const quotesJsonPath = path.join(process.cwd(), "data", "quotes.json");
+
+function asString(v: unknown) {
+  return typeof v === "string" ? v : "";
 }
 
-function storageInfo(): StorageInfo {
-  return { mode: "firestore", persistent: true };
-}
-
-function isFirebaseConfigured() {
-  const svc = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (svc && svc.trim()) return true;
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
-  return Boolean(projectId && clientEmail && privateKey);
-}
-
-function firebaseApp() {
-  if (getApps().length) return getApps()[0]!;
-
-  const svc = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (svc && svc.trim()) {
-    let creds: { project_id?: string; client_email?: string; private_key?: string };
-    try {
-      creds = JSON.parse(svc) as { project_id?: string; client_email?: string; private_key?: string };
-    } catch {
-      throw new Error("FIREBASE_NOT_CONFIGURED");
-    }
-    const projectId = creds.project_id || "";
-    const clientEmail = creds.client_email || "";
-    const privateKey = (creds.private_key || "").replace(/\\n/g, "\n");
-    if (!projectId || !clientEmail || !privateKey) throw new Error("FIREBASE_NOT_CONFIGURED");
-    try {
-      return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
-    } catch {
-      throw new Error("FIREBASE_NOT_CONFIGURED");
-    }
-  }
-
-  const projectId = process.env.FIREBASE_PROJECT_ID || "";
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || "";
-  const privateKey = (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n");
-  if (!projectId || !clientEmail || !privateKey) throw new Error("FIREBASE_NOT_CONFIGURED");
+async function readAllQuotes(): Promise<Quote[]> {
   try {
-    return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
-  } catch {
-    throw new Error("FIREBASE_NOT_CONFIGURED");
+    const raw = await fs.readFile(quotesJsonPath, "utf8");
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((q) => ({
+      id: asString((q as { id?: unknown }).id),
+      name: asString((q as { name?: unknown }).name),
+      email: asString((q as { email?: unknown }).email),
+      book: asString((q as { book?: unknown }).book),
+      text: asString((q as { text?: unknown }).text),
+      createdAt: asString((q as { createdAt?: unknown }).createdAt),
+    }));
+  } catch (err: unknown) {
+    const e = err as { code?: unknown };
+    if (e && e.code === "ENOENT") return [];
+    throw err;
   }
 }
 
-function quotesCollection() {
-  const app = firebaseApp();
-  const db = getFirestore(app);
-  const name = process.env.FIREBASE_QUOTES_COLLECTION || "quotes";
-  return db.collection(name);
+async function writeAllQuotes(quotes: Quote[]) {
+  await fs.mkdir(path.dirname(quotesJsonPath), { recursive: true });
+  const json = JSON.stringify(quotes, null, 2) + "\n";
+  await fs.writeFile(quotesJsonPath, json, "utf8");
 }
 
 export async function GET(req: Request) {
@@ -102,67 +63,21 @@ export async function GET(req: Request) {
     const page = Math.max(1, Number(url.searchParams.get("page") || "1") || 1);
     const pageSize = Math.min(20, Math.max(1, Number(url.searchParams.get("pageSize") || "8") || 8));
 
-    if (!isFirebaseConfigured()) {
-      return NextResponse.json({ ok: false, error: "Firebase is not configured" }, { status: 503 });
-    }
-
-    const col = quotesCollection();
-    const totalSnap = await col.count().get();
-    const total = Number(totalSnap.data().count || 0) || 0;
+    const all = await readAllQuotes();
+    all.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+    const total = all.length;
     const start = (page - 1) * pageSize;
-    const snap = await col.orderBy("createdAt", "desc").offset(start).limit(pageSize).get();
-    const items: Quote[] = snap.docs.map((d) => {
-      const data = d.data() as {
-        name?: unknown;
-        email?: unknown;
-        book?: unknown;
-        text?: unknown;
-        createdAt?: unknown;
-      };
-      const rawCreatedAt = data.createdAt;
-      const createdAt =
-        rawCreatedAt instanceof Timestamp
-          ? rawCreatedAt.toDate().toISOString()
-          : typeof rawCreatedAt === "string"
-            ? rawCreatedAt
-            : "";
-      return {
-        id: d.id,
-        name: typeof data.name === "string" ? data.name : "",
-        email: typeof data.email === "string" ? data.email : "",
-        book: typeof data.book === "string" ? data.book : "",
-        text: typeof data.text === "string" ? data.text : "",
-        createdAt,
-      };
-    });
+    const items = all.slice(start, start + pageSize);
 
-    return NextResponse.json({ ok: true, page, pageSize, total, items, storage: storageInfo() });
+    return NextResponse.json({ ok: true, page, pageSize, total, items });
   } catch (err: unknown) {
     console.error("Quotes API GET error:", err);
-    const msg = err instanceof Error ? err.message : "";
-    if (msg === "FIREBASE_NOT_CONFIGURED") {
-      return NextResponse.json({ ok: false, error: "Firebase admin credentials are missing or invalid" }, { status: 503 });
-    }
-    if (isFirestoreApiDisabledError(err)) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Cloud Firestore API is disabled for this project",
-          hint: "Enable Firestore API (firestore.googleapis.com) for your GCP project, then retry.",
-        },
-        { status: 503 },
-      );
-    }
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    if (!isFirebaseConfigured()) {
-      return NextResponse.json({ ok: false, error: "Firebase is not configured" }, { status: 503 });
-    }
-
     let data: Body;
     try {
       data = (await req.json()) as Body;
@@ -188,41 +103,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Invalid text" }, { status: 400 });
     }
 
-    const createdAt = Timestamp.now();
     const q: Quote = {
       id: crypto.randomUUID(),
       name,
       email,
       book,
       text,
-      createdAt: createdAt.toDate().toISOString(),
+      createdAt: new Date().toISOString(),
     };
 
-    const col = quotesCollection();
-    await col.doc(q.id).set({
-      name: q.name,
-      email: q.email,
-      book: q.book,
-      text: q.text,
-      createdAt,
-    });
-    return NextResponse.json({ ok: true, item: q }, { status: 201 });
+    const all = await readAllQuotes();
+    await writeAllQuotes([q, ...all]);
+    return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err: unknown) {
     console.error("Quotes API POST error:", err);
-    const msg = err instanceof Error ? err.message : "";
-    if (msg === "FIREBASE_NOT_CONFIGURED") {
-      return NextResponse.json({ ok: false, error: "Firebase admin credentials are missing or invalid" }, { status: 503 });
-    }
-    if (isFirestoreApiDisabledError(err)) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Cloud Firestore API is disabled for this project",
-          hint: "Enable Firestore API (firestore.googleapis.com) for your GCP project, then retry.",
-        },
-        { status: 503 },
-      );
-    }
     return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
   }
 }
