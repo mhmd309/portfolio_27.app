@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
 
@@ -26,9 +27,41 @@ function isEmail(v: string) {
 }
 
 const quotesJsonPath = path.join(process.cwd(), "data", "quotes.json");
+const fallbackAdminToken = "Mohamedelseedi88$";
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || "";
 
 function asString(v: unknown) {
   return typeof v === "string" ? v : "";
+}
+
+function safeEqual(a: string, b: string) {
+  const aBuf = Buffer.from(a);
+  const bBuf = Buffer.from(b);
+  if (aBuf.length !== bBuf.length) return false;
+  return crypto.timingSafeEqual(aBuf, bBuf);
+}
+
+function isAdminRequest(req: Request) {
+  const required = process.env.ADMIN_TOKEN ?? fallbackAdminToken;
+  const provided = req.headers.get("x-admin-token") || "";
+  return safeEqual(provided, required);
+}
+
+type QuotesRow = {
+  id: string | null;
+  name: string | null;
+  email: string | null;
+  book_name: string | null;
+  quote: string | null;
+  created_at: string | null;
+};
+
+function getSupabase() {
+  if (!supabaseUrl || !supabaseKey) return null;
+  return createClient(supabaseUrl, supabaseKey, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
 }
 
 async function readAllQuotes(): Promise<Quote[]> {
@@ -60,16 +93,52 @@ async function writeAllQuotes(quotes: Quote[]) {
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
+    const validate = (url.searchParams.get("validate") || "").trim() === "1";
+    if (validate) {
+      if (!isAdminRequest(req)) {
+        return NextResponse.json({ ok: false, error: "Invalid token" }, { status: 403 });
+      }
+      return NextResponse.json({ ok: true });
+    }
+
     const page = Math.max(1, Number(url.searchParams.get("page") || "1") || 1);
     const pageSize = Math.min(20, Math.max(1, Number(url.searchParams.get("pageSize") || "8") || 8));
     const bookQuery = (url.searchParams.get("book") || "").trim();
     const q = bookQuery.toLocaleLowerCase();
 
+    const start = (page - 1) * pageSize;
+    const supabase = getSupabase();
+    if (supabase) {
+      let query = supabase
+        .from("quotes")
+        .select("id,name,email,book_name,quote,created_at", { count: "exact" })
+        .order("created_at", { ascending: false });
+
+      if (q) query = query.ilike("book_name", `%${q}%`);
+      const { data, error, count } = await query.range(start, start + pageSize - 1);
+      if (error) return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+
+      const items = (data as QuotesRow[] | null) || [];
+      return NextResponse.json({
+        ok: true,
+        page,
+        pageSize,
+        total: count ?? 0,
+        items: items.map((row) => ({
+          id: asString(row.id),
+          name: asString(row.name),
+          email: asString(row.email),
+          book: asString(row.book_name),
+          text: asString(row.quote),
+          createdAt: asString(row.created_at),
+        })),
+      });
+    }
+
     const allRaw = await readAllQuotes();
     const all = q ? allRaw.filter((x) => (x.book || "").trim().toLocaleLowerCase().includes(q)) : allRaw;
     all.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
     const total = all.length;
-    const start = (page - 1) * pageSize;
     const items = all.slice(start, start + pageSize);
 
     return NextResponse.json({ ok: true, page, pageSize, total, items });
@@ -106,15 +175,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Invalid text" }, { status: 400 });
     }
 
-    const q: Quote = {
-      id: crypto.randomUUID(),
-      name,
-      email,
-      book,
-      text,
-      createdAt: new Date().toISOString(),
-    };
+    const supabase = getSupabase();
+    if (supabase) {
+      const { error } = await supabase.from("quotes").insert([
+        {
+          name,
+          email,
+          book_name: book,
+          quote: text,
+        },
+      ]);
+      if (error) return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+      return NextResponse.json({ ok: true }, { status: 201 });
+    }
 
+    const q: Quote = { id: crypto.randomUUID(), name, email, book, text, createdAt: new Date().toISOString() };
     const all = await readAllQuotes();
     await writeAllQuotes([q, ...all]);
     return NextResponse.json({ ok: true }, { status: 201 });
@@ -126,6 +201,10 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
+    if (!isAdminRequest(req)) {
+      return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+    }
+
     const url = new URL(req.url);
     const id = (url.searchParams.get("id") || "").trim();
     if (!id) return NextResponse.json({ ok: false, error: "Missing id" }, { status: 400 });
@@ -135,6 +214,43 @@ export async function PATCH(req: Request) {
       data = (await req.json()) as Body;
     } catch {
       return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
+    }
+
+    const supabase = getSupabase();
+    if (supabase) {
+      const name = typeof data.name === "string" ? data.name.trim() : undefined;
+      const email = typeof data.email === "string" ? data.email.trim() : undefined;
+      const book = typeof data.book === "string" ? data.book.trim() : undefined;
+      const text = typeof data.text === "string" ? data.text.trim() : undefined;
+
+      const nextName = name ?? "";
+      const nextEmail = email ?? "";
+      const nextBook = book ?? "";
+      const nextText = text ?? "";
+
+      if (name !== undefined && (nextName.length < 2 || nextName.length > 80)) {
+        return NextResponse.json({ ok: false, error: "Invalid name" }, { status: 400 });
+      }
+      if (email !== undefined && !isEmail(nextEmail)) {
+        return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
+      }
+      if (book !== undefined && (nextBook.length < 2 || nextBook.length > 160)) {
+        return NextResponse.json({ ok: false, error: "Invalid book" }, { status: 400 });
+      }
+      if (text !== undefined && (nextText.length < 3 || nextText.length > 1200)) {
+        return NextResponse.json({ ok: false, error: "Invalid text" }, { status: 400 });
+      }
+
+      const update: Record<string, string> = {};
+      if (name !== undefined) update["name"] = nextName;
+      if (email !== undefined) update["email"] = nextEmail;
+      if (book !== undefined) update["book_name"] = nextBook;
+      if (text !== undefined) update["quote"] = nextText;
+
+      const { data: updated, error } = await supabase.from("quotes").update(update).eq("id", id).select("id");
+      if (error) return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+      if (!updated || updated.length === 0) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
+      return NextResponse.json({ ok: true });
     }
 
     const all = await readAllQuotes();
@@ -171,9 +287,21 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    if (!isAdminRequest(req)) {
+      return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+    }
+
     const url = new URL(req.url);
     const id = (url.searchParams.get("id") || "").trim();
     if (!id) return NextResponse.json({ ok: false, error: "Missing id" }, { status: 400 });
+
+    const supabase = getSupabase();
+    if (supabase) {
+      const { data: removed, error } = await supabase.from("quotes").delete().eq("id", id).select("id");
+      if (error) return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+      if (!removed || removed.length === 0) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
+      return NextResponse.json({ ok: true });
+    }
 
     const all = await readAllQuotes();
     const next = all.filter((q) => q.id !== id);

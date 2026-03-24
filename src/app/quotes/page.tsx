@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FiBookOpen, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiBookOpen, FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
+import { createPortal } from "react-dom";
 import QuoteCopyButton from "src/components/QuoteCopyButton";
 import QuoteItemActions from "src/components/QuoteItemActions";
 
@@ -54,8 +55,15 @@ export default function QuotesPage() {
   const [data, setData] = useState<QuotesApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
+  const [adminToken, setAdminToken] = useState<string | null>(null);
+  const [ownerModalOpen, setOwnerModalOpen] = useState(false);
+  const [ownerTokenInput, setOwnerTokenInput] = useState("");
+  const [ownerTokenError, setOwnerTokenError] = useState<string | null>(null);
+  const [ownerTokenChecking, setOwnerTokenChecking] = useState(false);
+  const [disableConfirmOpen, setDisableConfirmOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const debounceRef = useRef<number | null>(null);
+  const portalTarget = typeof document !== "undefined" ? document.body : null;
 
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
@@ -72,6 +80,16 @@ export default function QuotesPage() {
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const key = "quotes_admin_token";
+      const v = (window.localStorage.getItem(key) || "").trim();
+      setAdminToken(v ? v : null);
+    } catch {
+      setAdminToken(null);
+    }
   }, []);
 
   useEffect(() => {
@@ -121,6 +139,56 @@ export default function QuotesPage() {
   const safePage = clamp(page, 1, totalPages);
   const items = data && data.ok ? data.items : [];
 
+  function onOwnerModeClick() {
+    if (adminToken) {
+      setDisableConfirmOpen(true);
+    } else {
+      setOwnerTokenInput("");
+      setOwnerTokenError(null);
+      setOwnerModalOpen(true);
+    }
+  }
+
+  async function enableOwnerMode() {
+    const key = "quotes_admin_token";
+    const token = ownerTokenInput.trim();
+    if (!token) return;
+    setOwnerTokenChecking(true);
+    setOwnerTokenError(null);
+    try {
+      const res = await fetch("/api/quotes?validate=1", {
+        method: "GET",
+        headers: { "x-admin-token": token },
+        cache: "no-store",
+      });
+      const json = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      if (!res.ok || !json?.ok) {
+        setOwnerTokenError(json?.error || "Invalid token");
+        return;
+      }
+      try {
+        window.localStorage.setItem(key, token);
+      } catch {}
+      setAdminToken(token);
+      setOwnerModalOpen(false);
+      window.dispatchEvent(new CustomEvent("app:toast", { detail: { variant: "success", message: "Owner mode enabled" } }));
+    } catch {
+      setOwnerTokenError("Unable to validate token. Please try again.");
+    } finally {
+      setOwnerTokenChecking(false);
+    }
+  }
+
+  function disableOwnerMode() {
+    const key = "quotes_admin_token";
+    try {
+      window.localStorage.removeItem(key);
+    } catch {}
+    setAdminToken(null);
+    setDisableConfirmOpen(false);
+    window.dispatchEvent(new CustomEvent("app:toast", { detail: { variant: "success", message: "Owner mode disabled" } }));
+  }
+
   useEffect(() => {
     if (!ready) return;
     if (safePage !== page) setPage(safePage);
@@ -144,10 +212,138 @@ export default function QuotesPage() {
               {total}
             </span>
           </div>
-          <Link className="underline text-sm" href="/quotes/new">
-            Add Quote
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="button" className="underline text-sm cursor-pointer" onClick={onOwnerModeClick}>
+              {adminToken ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.22)]" />
+                  <span>Owner mode: enabled</span>
+                </span>
+              ) : (
+                "Owner mode"
+              )}
+            </button>
+            <Link className="underline text-sm" href="/quotes/new">
+              Add Quote
+            </Link>
+          </div>
         </div>
+
+        {ownerModalOpen
+          ? portalTarget
+            ? createPortal(
+                <div className="fixed inset-0 z-[220]" role="dialog" aria-modal="true">
+                  <div
+                    className="absolute inset-0 bg-black/60 cursor-pointer"
+                    onClick={() => setOwnerModalOpen(false)}
+                  />
+                  <div className="absolute left-1/2 top-1/2 w-[min(92vw,32rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-background p-5 shadow-xl">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="font-semibold">Owner Mode</div>
+                      <button
+                        type="button"
+                        onClick={() => setOwnerModalOpen(false)}
+                        className="inline-flex items-center justify-center cursor-pointer rounded-md border border-zinc-200/60 dark:border-zinc-800/60 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                        aria-label="Close"
+                        title="Close"
+                      >
+                        <FiX className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                      Enter your admin token (ADMIN_TOKEN). This is stored locally in your browser.
+                    </div>
+
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium mb-1">Admin token</label>
+                      <input
+                        value={ownerTokenInput}
+                        onChange={(e) => {
+                          setOwnerTokenInput(e.target.value);
+                          if (ownerTokenError) setOwnerTokenError(null);
+                        }}
+                        className="w-full rounded-md border border-zinc-200/60 dark:border-zinc-800/60 bg-background px-3 py-2"
+                        placeholder="Paste token here..."
+                        autoFocus
+                      />
+                      {ownerTokenError ? (
+                        <p className="mt-1 text-sm text-red-600">{ownerTokenError}</p>
+                      ) : null}
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setOwnerModalOpen(false)}
+                        className="inline-flex items-center justify-center cursor-pointer rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={enableOwnerMode}
+                        disabled={!ownerTokenInput.trim() || ownerTokenChecking}
+                        className="inline-flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed rounded-md px-4 py-2 bg-zinc-900 text-white disabled:opacity-60 dark:bg-zinc-100 dark:text-black text-sm"
+                      >
+                        {ownerTokenChecking ? "Validating..." : "Enable"}
+                      </button>
+                    </div>
+                  </div>
+                </div>,
+                portalTarget
+              )
+            : null
+          : null}
+
+        {disableConfirmOpen
+          ? portalTarget
+            ? createPortal(
+                <div className="fixed inset-0 z-[221]" role="dialog" aria-modal="true">
+                  <div
+                    className="absolute inset-0 bg-black/60 cursor-pointer"
+                    onClick={() => setDisableConfirmOpen(false)}
+                  />
+                  <div className="absolute left-1/2 top-1/2 w-[min(92vw,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-background p-5 shadow-xl">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="font-semibold">Disable owner mode?</div>
+                      <button
+                        type="button"
+                        onClick={() => setDisableConfirmOpen(false)}
+                        className="inline-flex items-center justify-center cursor-pointer rounded-md border border-zinc-200/60 dark:border-zinc-800/60 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                        aria-label="Close"
+                        title="Close"
+                      >
+                        <FiX className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                      This will remove the token from your browser and hide edit/delete actions.
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setDisableConfirmOpen(false)}
+                        className="inline-flex items-center justify-center cursor-pointer rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={disableOwnerMode}
+                        className="inline-flex items-center justify-center gap-2 cursor-pointer rounded-md px-4 py-2 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black text-sm"
+                      >
+                        Disable
+                      </button>
+                    </div>
+                  </div>
+                </div>,
+                portalTarget
+              )
+            : null
+          : null}
 
         <div className="rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 p-6 bg-white/50 dark:bg-black/30">
           <input
@@ -187,7 +383,7 @@ export default function QuotesPage() {
                     </div>
                     <div className="absolute top-3 left-3 z-[1] flex items-center gap-2">
                       <QuoteCopyButton text={q.text} locale={rtl ? "ar" : "en"} />
-                      <QuoteItemActions quote={q} rtl={rtl} />
+                      <QuoteItemActions quote={q} rtl={rtl} adminToken={adminToken} />
                     </div>
                     <div
                       className="flex flex-wrap items-start justify-between gap-3"

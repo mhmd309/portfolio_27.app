@@ -16,9 +16,10 @@ type Quote = {
 type Props = {
   quote: Quote;
   rtl: boolean;
+  adminToken: string | null;
 };
 
-export default function QuoteItemActions({ quote, rtl }: Props) {
+export default function QuoteItemActions({ quote, rtl, adminToken }: Props) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -49,7 +50,10 @@ export default function QuoteItemActions({ quote, rtl }: Props) {
   async function onDeleteConfirmed() {
     setDeleting(true);
     try {
-      const res = await fetch(`/api/quotes?id=${encodeURIComponent(quote.id)}`, { method: "DELETE" });
+      const res = await fetch(`/api/quotes?id=${encodeURIComponent(quote.id)}`, {
+        method: "DELETE",
+        headers: adminToken ? { "x-admin-token": adminToken } : undefined,
+      });
       const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
       if (!res.ok || !data?.ok) {
         window.dispatchEvent(
@@ -77,9 +81,11 @@ export default function QuoteItemActions({ quote, rtl }: Props) {
     if (!valid) return;
     setSaving(true);
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (adminToken) headers["x-admin-token"] = adminToken;
       const res = await fetch(`/api/quotes?id=${encodeURIComponent(quote.id)}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ name: nameVal, email: emailVal, book: bookVal, text: textVal }),
       });
       const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
@@ -105,34 +111,36 @@ export default function QuoteItemActions({ quote, rtl }: Props) {
 
   return (
     <>
-      <div className="flex items-center gap-2 shrink-0">
-        <button
-          type="button"
-          onClick={() => setEditOpen(true)}
-          className="inline-flex items-center justify-center cursor-pointer rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900"
-          title={rtl ? "تعديل" : "Edit"}
-          aria-label={rtl ? "تعديل" : "Edit"}
-        >
-          <FiEdit2 className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => setConfirmOpen(true)}
-          disabled={deleting}
-          className="inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 disabled:opacity-60"
-          title={rtl ? "حذف" : "Delete"}
-          aria-label={rtl ? "حذف" : "Delete"}
-        >
-          {deleting ? <FiLoader className="h-4 w-4 animate-spin" /> : <FiTrash2 className="h-4 w-4" />}
-        </button>
-      </div>
+      {adminToken ? (
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setEditOpen(true)}
+            className="inline-flex items-center justify-center cursor-pointer rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900"
+            title={rtl ? "تعديل" : "Edit"}
+            aria-label={rtl ? "تعديل" : "Edit"}
+          >
+            <FiEdit2 className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmOpen(true)}
+            disabled={deleting}
+            className="inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed rounded-md border border-zinc-200/60 dark:border-zinc-800/60 px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 disabled:opacity-60"
+            title={rtl ? "حذف" : "Delete"}
+            aria-label={rtl ? "حذف" : "Delete"}
+          >
+            {deleting ? <FiLoader className="h-4 w-4 animate-spin" /> : <FiTrash2 className="h-4 w-4" />}
+          </button>
+        </div>
+      ) : null}
 
       {confirmOpen
         ? portalTarget
           ? createPortal(
               <div className="fixed inset-0 z-[200]" role="dialog" aria-modal="true">
                 <div
-                  className="absolute inset-0 bg-black/60"
+                  className="absolute inset-0 bg-black/60 cursor-pointer"
                   onClick={() => (!deleting ? setConfirmOpen(false) : null)}
                 />
                 <div
@@ -189,7 +197,10 @@ export default function QuoteItemActions({ quote, rtl }: Props) {
         ? portalTarget
           ? createPortal(
               <div className="fixed inset-0 z-[201]" role="dialog" aria-modal="true">
-                <div className="absolute inset-0 bg-black/60" onClick={() => (!saving ? setEditOpen(false) : null)} />
+                <div
+                  className="absolute inset-0 bg-black/60 cursor-pointer"
+                  onClick={() => (!saving ? setEditOpen(false) : null)}
+                />
                 <div className="absolute left-1/2 top-1/2 w-[min(92vw,36rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-background p-5 shadow-xl">
                   <div className="flex items-center justify-between gap-4">
                     <div className="font-semibold">{rtl ? "تعديل الاقتباس" : "Edit Quote"}</div>
