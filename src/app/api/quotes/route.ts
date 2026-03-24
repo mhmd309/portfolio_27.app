@@ -28,12 +28,23 @@ function isEmail(v: string) {
 
 const quotesJsonPath = path.join(process.cwd(), "data", "quotes.json");
 const fallbackAdminToken = "Mohamedelseedi88$";
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_ANON_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  "";
+function normalizeEnv(v: string) {
+  const s = v.trim();
+  const pairs: Array<[string, string]> = [
+    ["`", "`"],
+    ['"', '"'],
+    ["'", "'"],
+  ];
+  for (const [open, close] of pairs) {
+    if (s.length >= 2 && s.startsWith(open) && s.endsWith(close)) return s.slice(1, -1).trim();
+  }
+  return s;
+}
+
+const supabaseUrlRaw = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseServiceKeyRaw = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabaseUrl = normalizeEnv(supabaseUrlRaw);
+const supabaseServiceKey = normalizeEnv(supabaseServiceKeyRaw);
 
 function asString(v: unknown) {
   return typeof v === "string" ? v : "";
@@ -62,8 +73,8 @@ type QuotesRow = {
 };
 
 function getSupabase() {
-  if (!supabaseUrl || !supabaseKey) return null;
-  return createClient(supabaseUrl, supabaseKey, {
+  if (!supabaseUrl || !supabaseServiceKey) return null;
+  return createClient(supabaseUrl, supabaseServiceKey, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   });
 }
@@ -120,7 +131,14 @@ export async function GET(req: Request) {
 
       if (q) query = query.ilike("book_name", `%${q}%`);
       const { data, error, count } = await query.range(start, start + pageSize - 1);
-      if (error) return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+      if (error) {
+        console.error("Supabase quotes GET error:", error);
+        const msg =
+          error.message.includes("schema cache") || error.message.includes("Could not find the table")
+            ? "Missing database table: public.quotes"
+            : error.message;
+        return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+      }
 
       const items = (data as QuotesRow[] | null) || [];
       return NextResponse.json({
@@ -189,7 +207,14 @@ export async function POST(req: Request) {
           quote: text,
         },
       ]);
-      if (error) return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+      if (error) {
+        console.error("Supabase quotes POST error:", error);
+        const msg =
+          error.message.includes("schema cache") || error.message.includes("Could not find the table")
+            ? "Missing database table: public.quotes"
+            : error.message;
+        return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+      }
       return NextResponse.json({ ok: true }, { status: 201 });
     }
 
@@ -252,7 +277,14 @@ export async function PATCH(req: Request) {
       if (text !== undefined) update["quote"] = nextText;
 
       const { data: updated, error } = await supabase.from("quotes").update(update).eq("id", id).select("id");
-      if (error) return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+      if (error) {
+        console.error("Supabase quotes PATCH error:", error);
+        const msg =
+          error.message.includes("schema cache") || error.message.includes("Could not find the table")
+            ? "Missing database table: public.quotes"
+            : error.message;
+        return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+      }
       if (!updated || updated.length === 0) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
       return NextResponse.json({ ok: true });
     }
@@ -302,7 +334,14 @@ export async function DELETE(req: Request) {
     const supabase = getSupabase();
     if (supabase) {
       const { data: removed, error } = await supabase.from("quotes").delete().eq("id", id).select("id");
-      if (error) return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+      if (error) {
+        console.error("Supabase quotes DELETE error:", error);
+        const msg =
+          error.message.includes("schema cache") || error.message.includes("Could not find the table")
+            ? "Missing database table: public.quotes"
+            : error.message;
+        return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+      }
       if (!removed || removed.length === 0) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
       return NextResponse.json({ ok: true });
     }
