@@ -1,0 +1,10 @@
+[
+  {
+    "id": "c3c1ed45-239d-40e7-bb1c-3cad82c73047",
+    "name": "Test User",
+    "email": "test@example.com",
+    "book": "Test Book",
+    "text": "This is a test quote with enough length.",
+    "createdAt": "2026-05-24T09:21:05.907Z"
+  }
+]

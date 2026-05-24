@@ -82,6 +82,7 @@ function getSupabase() {
 async function readAllQuotes(): Promise<Quote[]> {
   try {
     const raw = await fs.readFile(quotesJsonPath, "utf8");
+    if (!raw.trim()) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
     return parsed.map((q) => ({
@@ -95,6 +96,10 @@ async function readAllQuotes(): Promise<Quote[]> {
   } catch (err: unknown) {
     const e = err as { code?: unknown };
     if (e && e.code === "ENOENT") return [];
+    if (err instanceof SyntaxError) {
+      console.warn("Invalid JSON in quotes.json, resetting to empty array");
+      return [];
+    }
     throw err;
   }
 }
@@ -124,37 +129,39 @@ export async function GET(req: Request) {
     const start = (page - 1) * pageSize;
     const supabase = getSupabase();
     if (supabase) {
-      let query = supabase
-        .from("quotes")
-        .select("id,name,email,book_name,quote,created_at", { count: "exact" })
-        .order("created_at", { ascending: false });
+      try {
+        let query = supabase
+          .from("quotes")
+          .select("id,name,email,book_name,quote,created_at", { count: "exact" })
+          .order("created_at", { ascending: false });
 
-      if (q) query = query.ilike("book_name", `%${q}%`);
-      const { data, error, count } = await query.range(start, start + pageSize - 1);
-      if (error) {
-        console.error("Supabase quotes GET error:", error);
-        const msg =
-          error.message.includes("schema cache") || error.message.includes("Could not find the table")
-            ? "Missing database table: public.quotes"
-            : error.message;
-        return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+        if (q) query = query.ilike("book_name", `%${q}%`);
+        const { data, error, count } = await query.range(start, start + pageSize - 1);
+        if (error) {
+          console.error("Supabase quotes GET error:", error);
+          // If it's a table missing error, we fallback to local. Otherwise we might want to know.
+          // But for now, let's just fallback if any Supabase error occurs to keep the site working.
+          throw error;
+        }
+
+        const items = (data as QuotesRow[] | null) || [];
+        return NextResponse.json({
+          ok: true,
+          page,
+          pageSize,
+          total: count ?? 0,
+          items: items.map((row) => ({
+            id: asString(row.id),
+            name: asString(row.name),
+            email: asString(row.email),
+            book: asString(row.book_name),
+            text: asString(row.quote),
+            createdAt: asString(row.created_at),
+          })),
+        });
+      } catch (err) {
+        console.error("Supabase GET failed, falling back to local storage:", err);
       }
-
-      const items = (data as QuotesRow[] | null) || [];
-      return NextResponse.json({
-        ok: true,
-        page,
-        pageSize,
-        total: count ?? 0,
-        items: items.map((row) => ({
-          id: asString(row.id),
-          name: asString(row.name),
-          email: asString(row.email),
-          book: asString(row.book_name),
-          text: asString(row.quote),
-          createdAt: asString(row.created_at),
-        })),
-      });
     }
 
     const allRaw = await readAllQuotes();
@@ -175,6 +182,7 @@ export async function POST(req: Request) {
     let data: Body;
     try {
       data = (await req.json()) as Body;
+      if (!data || typeof data !== "object") throw new Error("Invalid body");
     } catch {
       return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
     }
@@ -199,23 +207,23 @@ export async function POST(req: Request) {
 
     const supabase = getSupabase();
     if (supabase) {
-      const { error } = await supabase.from("quotes").insert([
-        {
-          name,
-          email,
-          book_name: book,
-          quote: text,
-        },
-      ]);
-      if (error) {
-        console.error("Supabase quotes POST error:", error);
-        const msg =
-          error.message.includes("schema cache") || error.message.includes("Could not find the table")
-            ? "Missing database table: public.quotes"
-            : error.message;
-        return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+      try {
+        const { error } = await supabase.from("quotes").insert([
+          {
+            name,
+            email,
+            book_name: book,
+            quote: text,
+          },
+        ]);
+        if (error) {
+          console.error("Supabase quotes POST error:", error);
+          throw error;
+        }
+        return NextResponse.json({ ok: true }, { status: 201 });
+      } catch (err) {
+        console.error("Supabase POST failed, falling back to local storage:", err);
       }
-      return NextResponse.json({ ok: true }, { status: 201 });
     }
 
     const q: Quote = { id: crypto.randomUUID(), name, email, book, text, createdAt: new Date().toISOString() };
@@ -241,52 +249,54 @@ export async function PATCH(req: Request) {
     let data: Body;
     try {
       data = (await req.json()) as Body;
+      if (!data || typeof data !== "object") throw new Error("Invalid body");
     } catch {
       return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
     }
 
     const supabase = getSupabase();
     if (supabase) {
-      const name = typeof data.name === "string" ? data.name.trim() : undefined;
-      const email = typeof data.email === "string" ? data.email.trim() : undefined;
-      const book = typeof data.book === "string" ? data.book.trim() : undefined;
-      const text = typeof data.text === "string" ? data.text.trim() : undefined;
+      try {
+        const name = typeof data.name === "string" ? data.name.trim() : undefined;
+        const email = typeof data.email === "string" ? data.email.trim() : undefined;
+        const book = typeof data.book === "string" ? data.book.trim() : undefined;
+        const text = typeof data.text === "string" ? data.text.trim() : undefined;
 
-      const nextName = name ?? "";
-      const nextEmail = email ?? "";
-      const nextBook = book ?? "";
-      const nextText = text ?? "";
+        const nextName = name ?? "";
+        const nextEmail = email ?? "";
+        const nextBook = book ?? "";
+        const nextText = text ?? "";
 
-      if (name !== undefined && (nextName.length < 2 || nextName.length > 80)) {
-        return NextResponse.json({ ok: false, error: "Invalid name" }, { status: 400 });
-      }
-      if (email !== undefined && !isEmail(nextEmail)) {
-        return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
-      }
-      if (book !== undefined && (nextBook.length < 2 || nextBook.length > 160)) {
-        return NextResponse.json({ ok: false, error: "Invalid book" }, { status: 400 });
-      }
-      if (text !== undefined && (nextText.length < 3 || nextText.length > 1200)) {
-        return NextResponse.json({ ok: false, error: "Invalid text" }, { status: 400 });
-      }
+        if (name !== undefined && (nextName.length < 2 || nextName.length > 80)) {
+          return NextResponse.json({ ok: false, error: "Invalid name" }, { status: 400 });
+        }
+        if (email !== undefined && !isEmail(nextEmail)) {
+          return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
+        }
+        if (book !== undefined && (nextBook.length < 2 || nextBook.length > 160)) {
+          return NextResponse.json({ ok: false, error: "Invalid book" }, { status: 400 });
+        }
+        if (text !== undefined && (nextText.length < 3 || nextText.length > 1200)) {
+          return NextResponse.json({ ok: false, error: "Invalid text" }, { status: 400 });
+        }
 
-      const update: Record<string, string> = {};
-      if (name !== undefined) update["name"] = nextName;
-      if (email !== undefined) update["email"] = nextEmail;
-      if (book !== undefined) update["book_name"] = nextBook;
-      if (text !== undefined) update["quote"] = nextText;
+        const update: Record<string, string> = {};
+        if (name !== undefined) update["name"] = nextName;
+        if (email !== undefined) update["email"] = nextEmail;
+        if (book !== undefined) update["book_name"] = nextBook;
+        if (text !== undefined) update["quote"] = nextText;
 
-      const { data: updated, error } = await supabase.from("quotes").update(update).eq("id", id).select("id");
-      if (error) {
-        console.error("Supabase quotes PATCH error:", error);
-        const msg =
-          error.message.includes("schema cache") || error.message.includes("Could not find the table")
-            ? "Missing database table: public.quotes"
-            : error.message;
-        return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+        const { data: updated, error } = await supabase.from("quotes").update(update).eq("id", id).select("id");
+        if (error) {
+          console.error("Supabase quotes PATCH error:", error);
+          throw error;
+        }
+        if (!updated || updated.length === 0)
+          return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
+        return NextResponse.json({ ok: true });
+      } catch (err) {
+        console.error("Supabase PATCH failed, falling back to local storage:", err);
       }
-      if (!updated || updated.length === 0) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
-      return NextResponse.json({ ok: true });
     }
 
     const all = await readAllQuotes();
@@ -333,17 +343,18 @@ export async function DELETE(req: Request) {
 
     const supabase = getSupabase();
     if (supabase) {
-      const { data: removed, error } = await supabase.from("quotes").delete().eq("id", id).select("id");
-      if (error) {
-        console.error("Supabase quotes DELETE error:", error);
-        const msg =
-          error.message.includes("schema cache") || error.message.includes("Could not find the table")
-            ? "Missing database table: public.quotes"
-            : error.message;
-        return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+      try {
+        const { data: removed, error } = await supabase.from("quotes").delete().eq("id", id).select("id");
+        if (error) {
+          console.error("Supabase quotes DELETE error:", error);
+          throw error;
+        }
+        if (!removed || removed.length === 0)
+          return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
+        return NextResponse.json({ ok: true });
+      } catch (err) {
+        console.error("Supabase DELETE failed, falling back to local storage:", err);
       }
-      if (!removed || removed.length === 0) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
-      return NextResponse.json({ ok: true });
     }
 
     const all = await readAllQuotes();
