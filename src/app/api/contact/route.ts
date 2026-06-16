@@ -26,6 +26,7 @@ export async function POST(req: Request) {
   let data: Body;
   try {
     data = (await req.json()) as Body;
+    if (!data || typeof data !== "object") throw new Error("Invalid body");
   } catch {
     return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
   }
