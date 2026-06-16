@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   title: "Mohamed Emara",
   description: "Resume and professional projects",
   icons: {
-    icon: [{ url: "/icon.png", type: "image/png" }],
-    shortcut: ["/icon.png"],
-    apple: [{ url: "/icon.png", sizes: "180x180", type: "image/png" }],
+    icon: [{ url: "/cv.jpg", type: "image/jpeg" }],
+    shortcut: ["/cv.jpg"],
+    apple: [{ url: "/cv.jpg", sizes: "180x180", type: "image/jpeg" }],
   },
 };
 

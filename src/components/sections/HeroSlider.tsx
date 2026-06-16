@@ -72,7 +72,7 @@ export default function HeroSlider() {
         >
           <div className="relative mx-auto h-28 w-28 sm:h-32 sm:w-32">
             <motion.div
-              className="absolute inset-0 rounded-full p-[3px] bg-[conic-gradient(at_50%_50%,_#22d3ee,_#a78bfa,_#ec4899,_#22d3ee)]"
+              className="absolute inset-0 rounded-full p-[3px] bg-[conic-gradient(at_50%_50%,_#FDEB9E,_#7AE2CF,_#077A7D,_#06202B)]"
               animate={{ rotate: 360 }}
               transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
               aria-hidden
