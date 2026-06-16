@@ -86,10 +86,10 @@ export default function HeroSlider() {
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             >
               <Image
-                src="/icon.png"
+                src="/cv.jpg"
                 alt="Profile"
                 fill
-                sizes="(max-width: 640px) w-100"
+                sizes="(max-width: 640px) 128px, 128px"
                 className="object-cover"
                 priority
               />
