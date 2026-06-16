@@ -6,6 +6,8 @@ export type Project = {
   link: string;
   status?: ProjectStatus;
   brand?: string;
+  isDisabled?: boolean;
+  isUpgrade?: boolean;
 };
 
 export const projects: Project[] = [
@@ -15,6 +17,8 @@ export const projects: Project[] = [
     link: "#",
     status: "done",
     brand: "New",
+    isDisabled: true,
+    isUpgrade: true,
   },
   {
     title: "Lowyer", date: "01-03-2026",
@@ -22,6 +26,8 @@ export const projects: Project[] = [
     link: "#",
     status: "done",
     brand: "New",
+    isDisabled: true,
+    isUpgrade: true,
   },
   {
     title: "Eslami", date: "25-02-2026",

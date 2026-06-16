@@ -1,6 +1,6 @@
 "use client";
 
-import { FiFolder, FiCalendar, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiFolder, FiCalendar, FiEye, FiEyeOff, FiRefreshCw } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useMemo } from "react";
@@ -172,6 +172,12 @@ export default function Projects() {
                       {p.brand}
                     </span>
                   ) : null}
+                  {p.isUpgrade ? (
+                    <span className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-md bg-amber-500 text-white text-xs px-2 py-1">
+                      <FiRefreshCw className="h-3 w-3" />
+                      Upgrade
+                    </span>
+                  ) : null}
                   <Image
                     src={p.image}
                     alt={p.title}
@@ -193,14 +199,24 @@ export default function Projects() {
                     </div>
                   </div>
                   <div className="mt-auto pt-4 flex justify-center">
-                    <Link
-                      href={p.link || "#"}
-                      target={p.link ? "_blank" : "_self"}
-                      className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 bg-[#f3f3f3] dark:bg-zinc-900/95 border border-zinc-200/60 hover:border-zinc-800/60 hover:bg-black/100 hover:text-white cursor-pointer transition-colors duration-600 w-full"
-                    >
-                      <FiEye className="h-4 w-4" />
-                      <span>View Now</span>
-                    </Link>
+                    {p.isDisabled ? (
+                      <button
+                        disabled
+                        className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-400 dark:text-zinc-500 cursor-not-allowed opacity-60 w-full"
+                      >
+                        <FiEyeOff className="h-4 w-4" />
+                        <span>Coming Soon</span>
+                      </button>
+                    ) : (
+                      <Link
+                        href={p.link || "#"}
+                        target={p.link ? "_blank" : "_self"}
+                        className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 bg-[#f3f3f3] dark:bg-zinc-900/95 border border-zinc-200/60 hover:border-zinc-800/60 hover:bg-black/100 hover:text-white cursor-pointer transition-colors duration-600 w-full"
+                      >
+                        <FiEye className="h-4 w-4" />
+                        <span>View Now</span>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>
