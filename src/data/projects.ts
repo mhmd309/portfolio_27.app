@@ -10,18 +10,30 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    title: "DNA", date: "15-04-2026",
+    image: "/work/work28.png",
+    link: "#",
+    status: "done",
+    brand: "New",
+  },
+  {
+    title: "Lowyer", date: "01-03-2026",
+    image: "/work/work27.png",
+    link: "#",
+    status: "done",
+    brand: "New",
+  },
+  {
     title: "Eslami", date: "25-02-2026",
     image: "/work/work25.png",
     link: "https://mhmd309.github.io/Eslami/",
     status: "done",
-    brand: "New",
   },
   {
     title: "Ramadan Kareem", date: "20-02-2026",
     image: "/work/work03.png",
     link: "https://ramadankareem23.iceiy.com/",
     status: "done",
-    brand: "new",
   },
   {
     title: "Stop Watch",
