@@ -105,9 +105,14 @@ async function readAllQuotes(): Promise<Quote[]> {
 }
 
 async function writeAllQuotes(quotes: Quote[]) {
-  await fs.mkdir(path.dirname(quotesJsonPath), { recursive: true });
-  const json = JSON.stringify(quotes, null, 2) + "\n";
-  await fs.writeFile(quotesJsonPath, json, "utf8");
+  try {
+    await fs.mkdir(path.dirname(quotesJsonPath), { recursive: true });
+    const json = JSON.stringify(quotes, null, 2) + "\n";
+    await fs.writeFile(quotesJsonPath, json, "utf8");
+  } catch (err) {
+    // On Vercel, filesystem is read-only, so we just log and ignore if we can't write
+    console.warn("Failed to write quotes file (likely read-only filesystem on Vercel):", err);
+  }
 }
 
 export async function GET(req: Request) {
@@ -226,6 +231,17 @@ export async function POST(req: Request) {
       }
     }
 
+    // Check if we have write access to local storage
+    try {
+      await fs.access(path.dirname(quotesJsonPath), fs.constants.W_OK);
+    } catch {
+      // No write access (like on Vercel), return an error saying Supabase is required
+      return NextResponse.json({ 
+        ok: false, 
+        error: "Quotes feature requires Supabase configuration in production" 
+      }, { status: 501 });
+    }
+
     const q: Quote = { id: crypto.randomUUID(), name, email, book, text, createdAt: new Date().toISOString() };
     const all = await readAllQuotes();
     await writeAllQuotes([q, ...all]);
@@ -299,6 +315,17 @@ export async function PATCH(req: Request) {
       }
     }
 
+    // Check if we have write access to local storage
+    try {
+      await fs.access(path.dirname(quotesJsonPath), fs.constants.W_OK);
+    } catch {
+      // No write access (like on Vercel), return an error saying Supabase is required
+      return NextResponse.json({ 
+        ok: false, 
+        error: "Quotes feature requires Supabase configuration in production" 
+      }, { status: 501 });
+    }
+
     const all = await readAllQuotes();
     const idx = all.findIndex((q) => q.id === id);
     if (idx < 0) return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
@@ -355,6 +382,17 @@ export async function DELETE(req: Request) {
       } catch (err) {
         console.error("Supabase DELETE failed, falling back to local storage:", err);
       }
+    }
+
+    // Check if we have write access to local storage
+    try {
+      await fs.access(path.dirname(quotesJsonPath), fs.constants.W_OK);
+    } catch {
+      // No write access (like on Vercel), return an error saying Supabase is required
+      return NextResponse.json({ 
+        ok: false, 
+        error: "Quotes feature requires Supabase configuration in production" 
+      }, { status: 501 });
     }
 
     const all = await readAllQuotes();
