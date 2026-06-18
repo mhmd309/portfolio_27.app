@@ -1,6 +1,6 @@
 "use client";
 
-import { FiFolder, FiCalendar, FiEye, FiEyeOff, FiRefreshCw } from "react-icons/fi";
+import { FiFolder, FiEye, FiEyeOff, FiRefreshCw } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useMemo } from "react";
@@ -34,49 +34,12 @@ export default function Projects() {
     setVisible((v) => v + 6);
     setTimeout(() => setLoadingMore(false), 400);
   };
-  const parseDate = (s: string) => {
-    const v = s.trim();
-    const parts = v.split("-");
-    if (parts.length === 3) {
-      let y: number, m: number, d: number;
-      if (parts[0].length === 4) {
-        y = Number(parts[0]);
-        m = Number(parts[1]);
-        d = Number(parts[2]);
-      } else {
-        d = Number(parts[0]);
-        m = Number(parts[1]);
-        y = Number(parts[2]);
-      }
-      return new Date(Date.UTC(y, m - 1, d));
-    }
-    return new Date(v);
-  };
-  const sorted = useMemo(
-    () => [...data].sort((a, b) => (parseDate(b.date).getTime() || 0) - (parseDate(a.date).getTime() || 0)),
-    []
-  );
   const filtered = useMemo(() => {
-    if (tab === "all") return sorted;
-    return sorted.filter((p) => categoryOf(p) === tab);
-  }, [sorted, tab]);
+    if (tab === "all") return data;
+    return data.filter((p) => categoryOf(p) === tab);
+  }, [tab]);
   const current = filtered.slice(0, visible);
   const canLoadMore = visible < filtered.length;
-  const formatDate = (s: string) => {
-    const v = s.trim();
-    const parts = v.split("-");
-    if (parts.length !== 3) return v;
-    if (parts[0].length === 4) {
-      const yy = parts[0];
-      const mm = parts[1].padStart(2, "0");
-      const dd = parts[2].padStart(2, "0");
-      return `${dd}/${mm}/${yy}`;
-    }
-    const dd = parts[0].padStart(2, "0");
-    const mm = parts[1].padStart(2, "0");
-    const yy = parts[2];
-    return `${dd}/${mm}/${yy}`;
-  };
   return (
     <section id="projects" className="py-16 scroll-mt-24 lg:scroll-mt-28">
       <div className="mx-auto max-w-5xl">
@@ -156,7 +119,7 @@ export default function Projects() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {current.map((p: Project) => (
               <div
-                key={`${p.title}-${p.date}`}
+                key={p.title}
                 className="group rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-black/30 overflow-hidden hover:cursor-pointer flex flex-col"
               >
                 <div className="relative h-44 bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
@@ -190,15 +153,9 @@ export default function Projects() {
                   />
                 </div>
                 <div className="p-4 pt-4 flex flex-col flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 font-semibold">
-                      <FiFolder className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
-                      <span>{p.title}</span>
-                    </div>
-                    <div className="flex items-center text-xs text-zinc-600 dark:text-zinc-400">
-                      <FiCalendar className="h-4 w-4" />
-                      <span>{formatDate(p.date)}</span>
-                    </div>
+                  <div className="flex items-center gap-1 font-semibold">
+                    <FiFolder className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+                    <span>{p.title}</span>
                   </div>
                   <ProjectTechTags technologies={resolveProjectTechnologies(p.technologies)} />
                   <div className="mt-auto pt-4 flex justify-center">
