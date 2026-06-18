@@ -1,3 +1,5 @@
+import type { TechId } from "./technologies";
+
 export type ProjectStatus = "done" | "new" | "soon";
 export type Project = {
   title: string;
@@ -8,6 +10,7 @@ export type Project = {
   brand?: string;
   isDisabled?: boolean;
   isUpgrade?: boolean;
+  technologies?: TechId[];
 };
 
 export const projects: Project[] = [
@@ -19,6 +22,7 @@ export const projects: Project[] = [
     brand: "New",
     isDisabled: true,
     isUpgrade: true,
+    technologies: ["html", "css", "tailwind", "javascript", "php", "laravel", "mysql"],
   },
   {
     title: "Lowyer", date: "01-04-2026",
@@ -28,15 +32,17 @@ export const projects: Project[] = [
     brand: "New",
     isDisabled: true,
     isUpgrade: true,
+    technologies: ["html", "css", "tailwind", "javascript", "react", "next", "node", "mysql"],
   },
   {
-    title: "muntajatik", date: "12-03-2026",
+    title: "Muntajatik", date: "12-03-2026",
     image: "/work/work29.png",
     link: "#",
     status: "done",
     brand: "New",
     isDisabled: true,
     isUpgrade: true,
+    technologies: ["html", "css", "javascript", "react", "typescript", "node", "php", "laravel", "mysql"],
   },
   {
     title: "Eslami", date: "25-02-2026",

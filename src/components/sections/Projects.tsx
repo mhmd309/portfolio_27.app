@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useMemo } from "react";
 import { projects as data, type Project } from "../../data/projects";
+import { resolveProjectTechnologies } from "../../data/technologies";
+import ProjectTechTags from "../ProjectTechTags";
 
 export default function Projects() {
   const [visible, setVisible] = useState(6);
@@ -198,6 +200,7 @@ export default function Projects() {
                       <span>{formatDate(p.date)}</span>
                     </div>
                   </div>
+                  <ProjectTechTags technologies={resolveProjectTechnologies(p.technologies)} />
                   <div className="mt-auto pt-4 flex justify-center">
                     {p.isDisabled ? (
                       <button
