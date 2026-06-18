@@ -116,13 +116,13 @@ export default function Projects() {
           </div>
         </div>
         {current.length > 0 ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {current.map((p: Project) => (
               <div
                 key={p.title}
-                className="group rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-black/30 overflow-hidden hover:cursor-pointer flex flex-col"
+                className="group flex h-full flex-col overflow-hidden rounded-xl border border-zinc-200/60 bg-white/50 dark:border-zinc-800/60 dark:bg-black/30 hover:cursor-pointer"
               >
-                <div className="relative h-44 bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
+                <div className="relative h-40 shrink-0 overflow-hidden bg-zinc-50 dark:bg-zinc-900 sm:h-44">
                   {p.brand ? (
                     <span
                       className={
@@ -152,28 +152,32 @@ export default function Projects() {
                     priority={false}
                   />
                 </div>
-                <div className="p-4 pt-4 flex flex-col flex-1">
-                  <div className="flex items-center gap-1 font-semibold">
-                    <FiFolder className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
-                    <span>{p.title}</span>
+                <div className="flex flex-1 flex-col gap-3 p-4">
+                  <div className="flex items-center gap-2 border-b border-zinc-100 pb-2.5 dark:border-zinc-800/80">
+                    <FiFolder className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" />
+                    <h3 className="truncate text-sm font-semibold tracking-tight">{p.title}</h3>
                   </div>
-                  <ProjectTechTags technologies={resolveProjectTechnologies(p.technologies)} />
-                  <div className="mt-auto pt-4 flex justify-center">
+
+                  <div className="flex-1">
+                    <ProjectTechTags technologies={resolveProjectTechnologies(p.technologies)} />
+                  </div>
+
+                  <div className="mt-auto">
                     {p.isDisabled ? (
                       <button
                         disabled
-                        className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-400 dark:text-zinc-500 cursor-not-allowed opacity-60 w-full"
+                        className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-zinc-200/80 bg-zinc-50 px-3 text-xs font-medium text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-500 cursor-not-allowed"
                       >
-                        <FiEyeOff className="h-4 w-4" />
+                        <FiEyeOff className="h-3.5 w-3.5" />
                         <span>Coming Soon</span>
                       </button>
                     ) : (
                       <Link
                         href={p.link || "#"}
                         target={p.link ? "_blank" : "_self"}
-                        className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 bg-[#f3f3f3] dark:bg-zinc-900/95 border border-zinc-200/60 hover:border-zinc-800/60 hover:bg-black/100 hover:text-white cursor-pointer transition-colors duration-600 w-full"
+                        className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-zinc-200/60 bg-zinc-50 px-3 text-xs font-medium transition-colors duration-300 hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-700 dark:bg-zinc-900/80 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-black"
                       >
-                        <FiEye className="h-4 w-4" />
+                        <FiEye className="h-3.5 w-3.5" />
                         <span>View Now</span>
                       </Link>
                     )}
