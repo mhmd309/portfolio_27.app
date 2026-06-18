@@ -1,7 +1,6 @@
 "use client";
 
 import { FiUser, FiFolder, FiCode, FiMail, FiX } from "react-icons/fi";
-import { FiFileText } from "react-icons/fi";
 import { TbSlideshow } from "react-icons/tb";
 import clsx from "clsx";
 
@@ -9,12 +8,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 const items = [
-  { href: "#hero", label: "HOME", Icon: TbSlideshow, type: "section" as const },
-  { href: "#about", label: "ABOUT ME", Icon: FiUser, type: "section" as const },
-  { href: "#projects", label: "PROJECTS", Icon: FiFolder, type: "section" as const },
-  { href: "#skills", label: "SKILLS", Icon: FiCode, type: "section" as const },
-  { href: "#contact", label: "CONTACT ME", Icon: FiMail, type: "section" as const },
-  { href: "/quotes", label: "BOOK QUOTES", Icon: FiFileText, type: "route" as const },
+  { href: "#hero", label: "HOME", Icon: TbSlideshow },
+  { href: "#about", label: "ABOUT ME", Icon: FiUser },
+  { href: "#projects", label: "PROJECTS", Icon: FiFolder },
+  { href: "#skills", label: "SKILLS", Icon: FiCode },
+  { href: "#contact", label: "CONTACT ME", Icon: FiMail },
 ];
 
 type Props = {
@@ -26,11 +24,10 @@ export default function Sidebar({ open, onClose }: Props) {
   const [active, setActive] = useState<string>("#hero");
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const activeHref = pathname?.startsWith("/quotes") ? "/quotes" : active;
+  const activeHref = active;
   useEffect(() => {
     if (!isHome) return;
     const elems = items
-      .filter((i) => i.type === "section")
       .map(({ href }) => document.querySelector(href) as HTMLElement | null)
       .filter(Boolean) as HTMLElement[];
     if (elems.length === 0) return;
@@ -121,10 +118,10 @@ export default function Sidebar({ open, onClose }: Props) {
         </div>
         <nav className="px-2 py-4">
           <ul className="space-y-1">
-            {items.map(({ href, label, Icon, type }) => (
+            {items.map(({ href, label, Icon }) => (
               <li key={href}>
                 <Link
-                  href={type === "route" ? href : isHome ? href : `/${href}`}
+                  href={isHome ? href : `/${href}`}
                   aria-current={activeHref === href ? "page" : undefined}
                   onClick={() => {
                     setActive(href);

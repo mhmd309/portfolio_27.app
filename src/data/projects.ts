@@ -12,7 +12,7 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    title: "DNA", date: "15-04-2026",
+    title: "DNA", date: "15-05-2026",
     image: "/work/work28.png",
     link: "#",
     status: "done",
@@ -21,8 +21,17 @@ export const projects: Project[] = [
     isUpgrade: true,
   },
   {
-    title: "Lowyer", date: "01-03-2026",
+    title: "Lowyer", date: "01-04-2026",
     image: "/work/work27.png",
+    link: "#",
+    status: "done",
+    brand: "New",
+    isDisabled: true,
+    isUpgrade: true,
+  },
+  {
+    title: "muntajatik", date: "12-03-2026",
+    image: "/work/work29.png",
     link: "#",
     status: "done",
     brand: "New",
