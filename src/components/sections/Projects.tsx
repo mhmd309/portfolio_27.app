@@ -1,6 +1,6 @@
 "use client";
 
-import { FiFolder, FiEye, FiEyeOff, FiRefreshCw } from "react-icons/fi";
+import { FiFolder, FiEye, FiEyeOff, FiRefreshCw, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useMemo } from "react";
@@ -9,9 +9,9 @@ import { resolveProjectTechnologies } from "../../data/technologies";
 import ProjectTechTags from "../ProjectTechTags";
 
 export default function Projects() {
-  const [visible, setVisible] = useState(6);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   const [tab, setTab] = useState<"all" | "done" | "new" | "soon">("all");
-  const [loadingMore, setLoadingMore] = useState(false);
   const categoryOf = (p: Project): "done" | "new" | "soon" => {
     const s = (p.status || "").toLowerCase();
     const b = (p.brand || "").toLowerCase();
@@ -29,17 +29,13 @@ export default function Projects() {
     }
     return { all: data.length, done, newer, soon };
   }, []);
-  const handleLoadMore = () => {
-    setLoadingMore(true);
-    setVisible((v) => v + 6);
-    setTimeout(() => setLoadingMore(false), 400);
-  };
+
   const filtered = useMemo(() => {
     if (tab === "all") return data;
     return data.filter((p) => categoryOf(p) === tab);
   }, [tab]);
-  const current = filtered.slice(0, visible);
-  const canLoadMore = visible < filtered.length;
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const current = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   return (
     <section id="projects" className="py-16 scroll-mt-24 lg:scroll-mt-28">
       <div className="mx-auto max-w-5xl">
@@ -54,7 +50,7 @@ export default function Projects() {
               aria-selected={tab === "all"}
               onClick={() => {
                 setTab("all");
-                setVisible(6);
+                setCurrentPage(1);
               }}
               className={
                 (tab === "all"
@@ -70,7 +66,7 @@ export default function Projects() {
               aria-selected={tab === "done"}
               onClick={() => {
                 setTab("done");
-                setVisible(6);
+                setCurrentPage(1);
               }}
               className={
                 (tab === "done"
@@ -86,7 +82,7 @@ export default function Projects() {
               aria-selected={tab === "new"}
               onClick={() => {
                 setTab("new");
-                setVisible(6);
+                setCurrentPage(1);
               }}
               className={
                 (tab === "new"
@@ -102,7 +98,7 @@ export default function Projects() {
               aria-selected={tab === "soon"}
               onClick={() => {
                 setTab("soon");
-                setVisible(6);
+                setCurrentPage(1);
               }}
               className={
                 (tab === "soon"
@@ -194,28 +190,41 @@ export default function Projects() {
             </p>
           </div>
         )}
-        {canLoadMore ? (
-          <div className="mt-8 flex justify-center">
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
             <button
-              onClick={handleLoadMore}
-              disabled={loadingMore}
-              className="inline-flex items-center justify-center rounded-md px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-black dark:hover:bg-white transition-colors duration-200 cursor-pointer"
+              onClick={() => setCurrentPage((p: number) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="inline-flex items-center justify-center rounded-md p-2 border border-zinc-200/60 dark:border-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Previous page"
             >
-              <FiEye className="mr-2 h-4 w-4" />
-              View more
+              <FiChevronLeft className="h-5 w-5" />
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`inline-flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors duration-200 ${
+                    currentPage === page
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black"
+                      : "border border-zinc-200/60 dark:border-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setCurrentPage((p: number) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="inline-flex items-center justify-center rounded-md p-2 border border-zinc-200/60 dark:border-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Next page"
+            >
+              <FiChevronRight className="h-5 w-5" />
             </button>
           </div>
-        ) : filtered.length > 6 ? (
-          <div className="mt-8 flex justify-center">
-            <button
-              onClick={() => setVisible(6)}
-              className="inline-flex items-center justify-center rounded-md px-4 py-2 border border-zinc-200/60 dark:border-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors duration-200 cursor-pointer"
-            >
-              <FiEyeOff className="mr-2 h-4 w-4" />
-              View less
-            </button>
-          </div>
-        ) : null}
+        )}
       </div>
     </section>
   );
