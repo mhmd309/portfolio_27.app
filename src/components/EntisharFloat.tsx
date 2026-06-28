@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 const LINK = "https://aintishar-web-app.vercel.app/";
-const TITLE = "إنتشار للبرمجيات والتسويق";
+const TITLE = "إنتشار للبرمجيات والتسويق الإلكترونى";
 
 export default function EntisharFloat() {
   return (
