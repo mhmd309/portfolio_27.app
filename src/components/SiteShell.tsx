@@ -6,6 +6,7 @@ import Header from "src/components/Header";
 import Sidebar from "src/components/Sidebar";
 import Footer from "src/components/Footer";
 import ScrollTop from "src/components/ScrollTop";
+import EntisharFloat from "src/components/EntisharFloat";
  
  type Props = {
  children: ReactNode;
@@ -61,6 +62,7 @@ import ScrollTop from "src/components/ScrollTop";
             ))}
           </div>
         ) : null}
+        <EntisharFloat />
         <ScrollTop />
         <Footer />
       </div>
