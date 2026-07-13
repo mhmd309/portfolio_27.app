@@ -14,11 +14,21 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    title: "Pharmacy",
+    image: "/work/work30.png",
+    link: "#",
+    status: "done",
+    brand: "soon",
+    isDisabled: true,
+    isUpgrade: true,
+    technologies: ["html", "css", "tailwind", "javascript", "php", "laravel", "mysql"],
+  },
+  {
     title: "DNA",
     image: "/work/work28.png",
     link: "#",
     status: "done",
-    brand: "New",
+    brand: "soon",
     isDisabled: true,
     isUpgrade: true,
     technologies: ["html", "css", "tailwind", "javascript", "php", "laravel", "mysql"],
