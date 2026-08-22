@@ -19,7 +19,7 @@ export default function EntisharFloat() {
       aria-label={TITLE}
     >
       <Image
-        src="/favicon.svg"
+        src="/إنتشار.png"
         alt=""
         width={36}
         height={36}
