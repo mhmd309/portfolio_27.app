@@ -36,12 +36,12 @@ export const projects: Project[] = [
   {
     title: "Lowyer",
     image: "/work/work27.png",
-    link: "#",
+    link: "https://law-firm-management-system-blue.vercel.app/",
     status: "done",
     brand: "New",
     isDisabled: true,
     isUpgrade: true,
-    technologies: ["html", "css", "tailwind", "javascript", "react", "next", "node", "mysql"],
+    technologies: ["html", "css", "tailwind", "javascript", "react", "next", "node", "supabase", "framer", "typescript"],
   },
   {
     title: "Muntajatik",

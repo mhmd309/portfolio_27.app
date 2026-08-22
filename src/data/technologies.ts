@@ -12,6 +12,8 @@ import {
   SiNextdotjs,
   SiNodedotjs,
   SiTypescript,
+  SiSupabase,
+  SiFramer,
 } from "react-icons/si";
 
 export type TechId =
@@ -26,7 +28,9 @@ export type TechId =
   | "react"
   | "next"
   | "node"
-  | "typescript";
+  | "typescript"
+  | "supabase"
+  | "framer";
 
 export type TechMeta = {
   label: string;
@@ -47,6 +51,8 @@ export const TECH_META: Record<TechId, TechMeta> = {
   next: { label: "Next.js", Icon: SiNextdotjs, accent: "#000000" },
   node: { label: "Node.js", Icon: SiNodedotjs, accent: "#339933" },
   typescript: { label: "TypeScript", Icon: SiTypescript, accent: "#3178C6" },
+  supabase: { label: "Supabase", Icon: SiSupabase, accent: "#3ECF8E" },
+  framer: { label: "Framer", Icon: SiFramer, accent: "#0055FF" },
 };
 
 export const DEFAULT_PROJECT_TECH: TechId[] = ["html", "css", "javascript", "bootstrap"];
