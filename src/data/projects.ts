@@ -39,7 +39,6 @@ export const projects: Project[] = [
     link: "https://law-firm-management-system-blue.vercel.app/",
     status: "done",
     brand: "New",
-    isDisabled: true,
     isUpgrade: true,
     technologies: ["html", "css", "tailwind", "javascript", "react", "next", "node", "supabase", "framer", "typescript"],
   },
