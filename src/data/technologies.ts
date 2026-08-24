@@ -55,7 +55,7 @@ export const TECH_META: Record<TechId, TechMeta> = {
   framer: { label: "Framer", Icon: SiFramer, accent: "#0055FF" },
 };
 
-export const DEFAULT_PROJECT_TECH: TechId[] = ["html", "css", "javascript", "bootstrap"];
+export const DEFAULT_PROJECT_TECH: TechId[] = ["html", "css", "javascript", "react"];
 
 export function resolveProjectTechnologies(technologies?: TechId[]): TechId[] {
   return technologies?.length ? technologies : DEFAULT_PROJECT_TECH;
