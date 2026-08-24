@@ -49,7 +49,7 @@ export const projects: Project[] = [
     link: "#",
     status: "done",
     brand: "New",
-    isDisabled: false,
+    isDisabled: true,
     isUpgrade: true,
     technologies: ["html", "css", "javascript", "react", "typescript", "node", "php", "laravel", "mysql"],
   },
