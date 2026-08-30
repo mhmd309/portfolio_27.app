@@ -94,11 +94,11 @@ export default function ResumePage() {
                   LinkedIn:{" "}
                   <a
                     className="underline"
-                    href="https://www.linkedin.com/in/mohamed-elseedi/"
+                    href="https://www.linkedin.com/in/mohamed-elseedi1610/"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    linkedin.com/in/mohamed-elseedi
+                    linkedin.com/in/mohamed-elseedi1610
                   </a>
                 </li>
               </ul>
