@@ -82,7 +82,7 @@ export default function ResumePage() {
               <ul className="mt-3 space-y-1.5 text-sm text-zinc-700 dark:text-zinc-300">
                 <li>Date of birth: 30/09/1996</li>
                 <li>Nationality: Egypt</li>
-                <li>Address: Daqahliya, Mansoura, Egypt</li>
+                <li>Address: Mansoura,Daqahliya, Egypt</li>
                 <li>Phone number: +201020495108</li>
                 <li>
                   Email address:{" "}
