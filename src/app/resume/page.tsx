@@ -83,7 +83,7 @@ export default function ResumePage() {
                 <li>Date of birth: 30/09/1996</li>
                 <li>Nationality: Egypt</li>
                 <li>Address: Daqahliya, Mansoura, Egypt</li>
-                <li>Phone number: 01020495108</li>
+                <li>Phone number: +201020495108</li>
                 <li>
                   Email address:{" "}
                   <a className="underline" href="mailto:m.elzero33@gmail.com">
