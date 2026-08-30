@@ -236,20 +236,24 @@ export default function ResumePage() {
               <div className="p-5 pt-3">
                 <ul className="divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
                   <li className="flex items-center justify-between py-1.5">
-                    <span>React/Next/Node</span>
-                    <span className="font-semibold">Professional</span>
+                    <span>HTML/CSS/JAVASCRIPT</span>
+                    <span className="font-semibold">HIGHLY EXPERIENCE</span>
                   </li>
                   <li className="flex items-center justify-between py-1.5">
-                    <span>HTML/CSS</span>
-                    <span className="font-semibold">Professional</span>
+                    <span>NODE.JS/REACT/NEXT.JS</span>
+                    <span className="font-semibold">HIGHLY EXPERIENCE</span>
                   </li>
                   <li className="flex items-center justify-between py-1.5">
-                    <span>Back-end Developer</span>
-                    <span className="font-semibold">Professional</span>
+                    <span>SUPBASE/POSTGRE/MYSQL</span>
+                    <span className="font-semibold">HIGHLY EXPERIENCE</span>
                   </li>
                   <li className="flex items-center justify-between py-1.5">
-                    <span>Web Application</span>
-                    <span className="font-semibold">Professional</span>
+                    <span>PHP/LARAVEL</span>
+                    <span className="font-semibold">HIGHLY EXPERIENCE</span>
+                  </li>
+                  <li className="flex items-center justify-between py-1.5">
+                    <span>GIT/GITHUB</span>
+                    <span className="font-semibold">HIGHLY EXPERIENCE</span>
                   </li>
                 </ul>
               </div>
